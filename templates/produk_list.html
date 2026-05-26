@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Produk - UMKM AI Assistant{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="page-title">
+                <i class="bi bi-box-seam me-2"></i>Daftar Produk
+            </h1>
+            <p class="page-subtitle">Kelola produk dan harga untuk bisnis Anda.</p>
+        </div>
+        <button class="btn btn-primary" onclick="showAddProduk()" id="btn-add-produk">
+            <i class="bi bi-plus-lg me-1"></i>Tambah Produk
+        </button>
+    </div>
+    
+    <!-- Products Table -->
+    <div class="content-card">
+        <div class="card-body-custom p-0">
+            <div class="table-responsive">
+                <table class="table table-custom mb-0" id="produk-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Produk</th>
+                            <th class="text-end">Harga Jual</th>
+                            <th class="text-end">Modal</th>
+                            <th class="text-end">Margin</th>
+                            <th>Satuan</th>
+                            <th>Terakhir Update</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="produk-tbody">
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                <span class="ms-2">Memuat data produk...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add/Edit Produk -->
+<div class="modal fade" id="produkModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-custom">
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title" id="produk-modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Tambah Produk
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="produk-form">
+                    <input type="hidden" id="produk-row-number">
+                    <input type="hidden" id="produk-mode" value="add">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Nama Produk</label>
+                            <input type="text" class="form-control form-control-custom" id="produk-nama" 
+                                   placeholder="Contoh: Nasi Goreng Spesial" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Harga Jual (Rp)</label>
+                            <input type="number" class="form-control form-control-custom" id="produk-harga" 
+                                   placeholder="15000" step="any" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Modal (Rp)</label>
+                            <input type="number" class="form-control form-control-custom" id="produk-modal" 
+                                   placeholder="8000" step="any" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Satuan</label>
+                            <select class="form-select form-control-custom" id="produk-satuan">
+                                <option value="pcs">pcs</option>
+                                <option value="kg">kg</option>
+                                <option value="liter">liter</option>
+                                <option value="porsi">porsi</option>
+                                <option value="cup">cup</option>
+                                <option value="botol">botol</option>
+                                <option value="bungkus">bungkus</option>
+                                <option value="lusin">lusin</option>
+                            </select>
+                        </div>
+                        <div class="col-12" id="margin-preview" style="display:none">
+                            <div class="alert alert-info mb-0">
+                                <i class="bi bi-calculator me-1"></i>
+                                Margin per unit: <strong id="margin-value">Rp 0</strong>
+                                (<span id="margin-percent">0</span>%)
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer modal-footer-custom">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-save-produk" onclick="saveProduk()">
+                    <i class="bi bi-check-lg me-1"></i>Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ==================== LOAD PRODUK ====================
+    function loadProduk() {
+        const tbody = document.getElementById('produk-tbody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-5">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    <span class="ms-2">Memuat data produk...</span>
+                </td>
+            </tr>
+        `;
+        
+        fetch('/api/produk-list')
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-danger">${data.error}</td></tr>`;
+                    return;
+                }
+                
+                const produk = data.data || [];
+                if (produk.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="bi bi-box-seam fs-1 text-muted d-block mb-2"></i>
+                                <span class="text-muted">Belum ada produk. Tambahkan produk pertama Anda!</span>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = produk.map(p => {
+                    const harga = parseFloat(String(p.harga_jual || '0').replace(/,/g, '')) || 0;
+                    const modal = parseFloat(String(p.modal || '0').replace(/,/g, '')) || 0;
+                    const margin = harga - modal;
+                    const marginClass = margin > 0 ? 'text-success' : margin < 0 ? 'text-danger' : '';
+                    
+                    return `
+                    <tr>
+                        <td><strong>${p.nama_produk || '-'}</strong></td>
+                        <td class="text-end">${formatRupiah(p.harga_jual)}</td>
+                        <td class="text-end">${formatRupiah(p.modal)}</td>
+                        <td class="text-end ${marginClass}"><strong>${formatRupiah(margin)}</strong></td>
+                        <td><span class="badge bg-secondary">${p.satuan || '-'}</span></td>
+                        <td><small class="text-muted">${p.terakhir_update || '-'}</small></td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editProduk(${p.row_number}, '${escapeHtml(p.nama_produk)}', '${escapeHtml(p.harga_jual)}', '${escapeHtml(p.modal)}', '${escapeHtml(p.satuan)}')" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="hapusProduk(${p.row_number}, '${escapeHtml(p.nama_produk)}')" title="Hapus">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+            })
+            .catch(err => {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-danger">Gagal memuat data</td></tr>`;
+            });
+    }
+    
+    // ==================== ADD PRODUK ====================
+    function showAddProduk() {
+        document.getElementById('produk-modal-title').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Tambah Produk';
+        document.getElementById('produk-mode').value = 'add';
+        document.getElementById('produk-row-number').value = '';
+        document.getElementById('produk-form').reset();
+        document.getElementById('margin-preview').style.display = 'none';
+        new bootstrap.Modal(document.getElementById('produkModal')).show();
+    }
+    
+    // ==================== EDIT PRODUK ====================
+    function editProduk(rowNumber, nama, harga, modal, satuan) {
+        document.getElementById('produk-modal-title').innerHTML = '<i class="bi bi-pencil-square me-2"></i>Edit Produk';
+        document.getElementById('produk-mode').value = 'edit';
+        document.getElementById('produk-row-number').value = rowNumber;
+        document.getElementById('produk-nama').value = nama;
+        document.getElementById('produk-harga').value = harga;
+        document.getElementById('produk-modal').value = modal;
+        document.getElementById('produk-satuan').value = satuan;
+        updateMarginPreview();
+        new bootstrap.Modal(document.getElementById('produkModal')).show();
+    }
+    
+    // ==================== SAVE PRODUK ====================
+    function saveProduk() {
+        const btn = document.getElementById('btn-save-produk');
+        const mode = document.getElementById('produk-mode').value;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menyimpan...';
+        
+        const data = {
+            nama_produk: document.getElementById('produk-nama').value,
+            harga_jual: document.getElementById('produk-harga').value,
+            modal: document.getElementById('produk-modal').value,
+            satuan: document.getElementById('produk-satuan').value,
+        };
+        
+        let url = '/api/produk/add';
+        if (mode === 'edit') {
+            url = '/api/produk/update';
+            data.row_number = document.getElementById('produk-row-number').value;
+        }
+        
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        })
+        .then(r => r.json())
+        .then(result => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Simpan';
+            
+            if (result.success) {
+                bootstrap.Modal.getInstance(document.getElementById('produkModal')).hide();
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, timer: 1500, showConfirmButton: false });
+                loadProduk();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal!', text: result.error });
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Simpan';
+            Swal.fire({ icon: 'error', title: 'Error!', text: 'Terjadi kesalahan jaringan.' });
+        });
+    }
+    
+    // ==================== HAPUS PRODUK ====================
+    function hapusProduk(rowNumber, nama) {
+        Swal.fire({
+            title: 'Hapus Produk?',
+            html: `Produk <strong>${nama}</strong> akan dihapus permanen!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+        }).then(result => {
+            if (result.isConfirmed) {
+                fetch('/api/produk/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ row_number: rowNumber }),
+                })
+                .then(r => r.json())
+                .then(result => {
+                    if (result.success) {
+                        Swal.fire({ icon: 'success', title: 'Dihapus!', text: result.message, timer: 1500, showConfirmButton: false });
+                        loadProduk();
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal!', text: result.error });
+                    }
+                })
+                .catch(() => Swal.fire({ icon: 'error', title: 'Error!', text: 'Terjadi kesalahan jaringan.' }));
+            }
+        });
+    }
+    
+    // ==================== MARGIN PREVIEW ====================
+    function updateMarginPreview() {
+        const harga = parseFloat(document.getElementById('produk-harga').value) || 0;
+        const modal = parseFloat(document.getElementById('produk-modal').value) || 0;
+        const margin = harga - modal;
+        const percent = harga > 0 ? ((margin / harga) * 100).toFixed(1) : 0;
+        
+        document.getElementById('margin-value').textContent = formatRupiah(margin);
+        document.getElementById('margin-percent').textContent = percent;
+        document.getElementById('margin-preview').style.display = (harga > 0 || modal > 0) ? 'block' : 'none';
+    }
+    
+    // ==================== HELPERS ====================
+    function formatRupiah(val) {
+        if (val === null || val === undefined || val === '' || val === '-') return '-';
+        const num = parseFloat(String(val).replace(/,/g, ''));
+        if (isNaN(num)) return val;
+        return 'Rp ' + num.toLocaleString('id-ID');
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+    
+    // ==================== INIT ====================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProduk();
+        
+        // Margin preview calculation
+        document.getElementById('produk-harga').addEventListener('input', updateMarginPreview);
+        document.getElementById('produk-modal').addEventListener('input', updateMarginPreview);
+    });
+</script>
+{% endblock %}

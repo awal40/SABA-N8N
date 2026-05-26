@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Transaksi - UMKM AI Assistant{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="page-title">
+                <i class="bi bi-receipt me-2"></i>Daftar Transaksi
+            </h1>
+            <p class="page-subtitle">Kelola semua transaksi penjualan Anda.</p>
+        </div>
+        <div class="period-filter">
+            <div class="btn-group" role="group" id="period-filter-transaksi">
+                <button type="button" class="btn btn-filter active" data-period="semua">Semua</button>
+                <button type="button" class="btn btn-filter" data-period="hari">Hari Ini</button>
+                <button type="button" class="btn btn-filter" data-period="minggu">Minggu</button>
+                <button type="button" class="btn btn-filter" data-period="bulan">Bulan</button>
+                <button type="button" class="btn btn-filter" data-period="tahun">Tahun</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transactions Table -->
+    <div class="content-card">
+        <div class="card-body-custom p-0">
+            <div class="table-responsive">
+                <table class="table table-custom mb-0" id="transaksi-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>Produk</th>
+                            <th>Jumlah</th>
+                            <th>Satuan</th>
+                            <th class="text-end">Harga Jual</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaksi-tbody">
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                <span class="ms-2">Memuat data transaksi...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Transaksi -->
+<div class="modal fade" id="editTransaksiModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-custom">
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Transaksi
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-transaksi-form">
+                    <input type="hidden" id="edit-row-number">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label">Tanggal</label>
+                            <input type="date" class="form-control form-control-custom" id="edit-tanggal" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Waktu</label>
+                            <input type="time" class="form-control form-control-custom" id="edit-waktu" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Produk</label>
+                            <input type="text" class="form-control form-control-custom" id="edit-produk" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">Jumlah</label>
+                            <input type="number" class="form-control form-control-custom" id="edit-jumlah" step="any" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">Satuan</label>
+                            <input type="text" class="form-control form-control-custom" id="edit-satuan" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label">Harga Jual</label>
+                            <input type="number" class="form-control form-control-custom" id="edit-harga-jual" step="any" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Total</label>
+                            <input type="number" class="form-control form-control-custom" id="edit-total" step="any" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer modal-footer-custom">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-save-transaksi" onclick="saveTransaksi()">
+                    <i class="bi bi-check-lg me-1"></i>Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ==================== LOAD TRANSAKSI ====================
+    let currentPeriod = 'semua';
+    
+    function loadTransaksi(period = 'semua') {
+        currentPeriod = period;
+        const tbody = document.getElementById('transaksi-tbody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center py-5">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    <span class="ms-2">Memuat data transaksi...</span>
+                </td>
+            </tr>
+        `;
+        
+        fetch(`/api/transaksi-list?period=${period}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-danger">${data.error}</td></tr>`;
+                    return;
+                }
+                
+                const transaksi = data.data || [];
+                if (transaksi.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+                                <span class="text-muted">Belum ada transaksi</span>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = transaksi.map(t => `
+                    <tr>
+                        <td>${t.tanggal || '-'}</td>
+                        <td>${t.waktu || '-'}</td>
+                        <td><strong>${t.produk || '-'}</strong></td>
+                        <td>${t.jumlah || '-'}</td>
+                        <td>${t.satuan || '-'}</td>
+                        <td class="text-end">${formatRupiah(t.harga_jual)}</td>
+                        <td class="text-end"><strong>${formatRupiah(t.total)}</strong></td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editTransaksi(${t.row_number}, '${escapeHtml(t.tanggal)}', '${escapeHtml(t.waktu)}', '${escapeHtml(t.produk)}', '${escapeHtml(t.jumlah)}', '${escapeHtml(t.satuan)}', '${escapeHtml(t.harga_jual)}', '${escapeHtml(t.total)}')" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="hapusTransaksi(${t.row_number})" title="Hapus">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-danger">Gagal memuat data</td></tr>`;
+            });
+    }
+    
+    // ==================== EDIT TRANSAKSI ====================
+    function editTransaksi(rowNumber, tanggal, waktu, produk, jumlah, satuan, hargaJual, total) {
+        document.getElementById('edit-row-number').value = rowNumber;
+        document.getElementById('edit-tanggal').value = tanggal;
+        document.getElementById('edit-waktu').value = waktu;
+        document.getElementById('edit-produk').value = produk;
+        document.getElementById('edit-jumlah').value = jumlah;
+        document.getElementById('edit-satuan').value = satuan;
+        document.getElementById('edit-harga-jual').value = hargaJual;
+        document.getElementById('edit-total').value = total;
+        
+        new bootstrap.Modal(document.getElementById('editTransaksiModal')).show();
+    }
+    
+    function saveTransaksi() {
+        const btn = document.getElementById('btn-save-transaksi');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menyimpan...';
+        
+        const data = {
+            row_number: document.getElementById('edit-row-number').value,
+            tanggal: document.getElementById('edit-tanggal').value,
+            waktu: document.getElementById('edit-waktu').value,
+            produk: document.getElementById('edit-produk').value,
+            jumlah: document.getElementById('edit-jumlah').value,
+            satuan: document.getElementById('edit-satuan').value,
+            harga_jual: document.getElementById('edit-harga-jual').value,
+            total: document.getElementById('edit-total').value,
+        };
+        
+        fetch('/api/transaksi/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        })
+        .then(r => r.json())
+        .then(result => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Simpan';
+            
+            if (result.success) {
+                bootstrap.Modal.getInstance(document.getElementById('editTransaksiModal')).hide();
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, timer: 1500, showConfirmButton: false });
+                loadTransaksi(currentPeriod);
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal!', text: result.error });
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Simpan';
+            Swal.fire({ icon: 'error', title: 'Error!', text: 'Terjadi kesalahan jaringan.' });
+        });
+    }
+    
+    // ==================== HAPUS TRANSAKSI ====================
+    function hapusTransaksi(rowNumber) {
+        Swal.fire({
+            title: 'Hapus Transaksi?',
+            text: 'Data transaksi yang dihapus tidak dapat dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+        }).then(result => {
+            if (result.isConfirmed) {
+                fetch('/api/transaksi/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ row_number: rowNumber }),
+                })
+                .then(r => r.json())
+                .then(result => {
+                    if (result.success) {
+                        Swal.fire({ icon: 'success', title: 'Dihapus!', text: result.message, timer: 1500, showConfirmButton: false });
+                        loadTransaksi(currentPeriod);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal!', text: result.error });
+                    }
+                })
+                .catch(() => Swal.fire({ icon: 'error', title: 'Error!', text: 'Terjadi kesalahan jaringan.' }));
+            }
+        });
+    }
+    
+    // ==================== HELPERS ====================
+    function formatRupiah(val) {
+        if (!val || val === '-') return '-';
+        const num = parseFloat(String(val).replace(/,/g, ''));
+        if (isNaN(num)) return val;
+        return 'Rp ' + num.toLocaleString('id-ID');
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+    
+    // ==================== INIT ====================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadTransaksi();
+        
+        // Period filter
+        document.querySelectorAll('#period-filter-transaksi .btn-filter').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#period-filter-transaksi .btn-filter').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                loadTransaksi(this.dataset.period);
+            });
+        });
+    });
+</script>
+{% endblock %}
