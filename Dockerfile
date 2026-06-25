@@ -35,6 +35,7 @@ ENV N8N_USER_FOLDER=/tmp/.n8n
 
 # Buat folder log dan pastikan permisi folder /app dan /tmp aman untuk non-root user (Hugging Face user ID 1000)
 RUN mkdir -p /tmp/.n8n /tmp/nginx /var/log/supervisor \
+    && sed -i 's/\r$//' /app/entrypoint.sh \
     && chmod -R 777 /tmp /var/log/supervisor /app \
     && chmod +x /app/entrypoint.sh
 
