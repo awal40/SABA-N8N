@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Debugging: Cetak variabel yang dibaca kontainer untuk memastikan tidak ada kesalahan salin
+echo "=== DATABASE DEBUGGING INFO ==="
+echo "DB_TYPE: '$DB_TYPE'"
+echo "DB_POSTGRESDB_HOST: '$DB_POSTGRESDB_HOST'"
+echo "DB_POSTGRESDB_PORT: '$DB_POSTGRESDB_PORT'"
+echo "DB_POSTGRESDB_USER: '$DB_POSTGRESDB_USER'"
+echo "==============================="
+
 # Pastikan folder n8n ada
 mkdir -p /tmp/.n8n
 
