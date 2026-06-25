@@ -139,7 +139,7 @@ def _build_format_requests(sheet_id: int, sheet_name: str) -> list:
 
 def create_spreadsheet(access_token: str, user_email: str) -> str:
     """
-    Buat Google Spreadsheet baru untuk user UMKM.
+    Buat Google Spreadsheet baru untuk user SABA-N8N.
     Membuat 2 sheet: transaksi, produk.
     Returns spreadsheet_id.
     """
@@ -148,7 +148,7 @@ def create_spreadsheet(access_token: str, user_email: str) -> str:
     # Buat spreadsheet dengan 2 sheets (tanpa dashboard)
     spreadsheet_body = {
         'properties': {
-            'title': f'UMKM Data - {user_email}',
+            'title': f'SABA-N8N Data - {user_email}',
         },
         'sheets': [
             {

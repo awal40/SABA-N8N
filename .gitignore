@@ -1,0 +1,23 @@
+# Environment variables (JANGAN di-push ke Git!)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+pyrightconfig.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# n8n workflow (opsional, hapus baris ini jika ingin di-track)
+# SABA-N8N-V 1.0.json
+SABA-N8N-V 1.0.json

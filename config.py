@@ -1,5 +1,5 @@
 """
-config.py - Konfigurasi aplikasi UMKM Voice AI Assistant
+config.py - Konfigurasi aplikasi SABA-N8N
 Memuat environment variables dan konstanta konfigurasi.
 """
 
@@ -8,8 +8,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Izinkan OAuth di localhost (development only)
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+# Izinkan OAuth tanpa HTTPS hanya di development
+if os.getenv('FLASK_ENV') != 'production':
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 # Izinkan perubahan scope dari Google (Google sering menambah scope tambahan)
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 

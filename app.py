@@ -1,5 +1,5 @@
 """
-app.py - Entry point aplikasi UMKM Voice AI Assistant.
+app.py - Entry point aplikasi SABA-N8N.
 Flask application factory, konfigurasi server, dan APScheduler.
 """
 
@@ -45,6 +45,9 @@ def create_app():
     return app
 
 
+# Buat instance app di level modul (dibutuhkan oleh gunicorn: `app:app`)
+app = create_app()
+
+
 if __name__ == '__main__':
-    app = create_app()
     app.run(debug=True, host='0.0.0.0', port=5000)
