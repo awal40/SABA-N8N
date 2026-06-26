@@ -8,6 +8,7 @@ WORKDIR /app
 USER root
 
 # Install dependencies sistem (Nginx, Supervisor, curl, Node.js)
+ARG N8N_VERSION=1
 RUN apt-get update && apt-get install -y \
     nginx \
     supervisor \
@@ -15,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -y -g n8n \
+    && npm install -g n8n@${N8N_VERSION} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,21 +27,18 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy semua file proyek ke container
 COPY . .
 
-# Konfigurasi n8n environment variables agar berjalan di subfolder /n8n/
+# Konfigurasi dasar n8n. URL publik diisi dinamis di run_n8n.sh dari SPACE_HOST/PUBLIC_URL.
 ENV N8N_PATH=/n8n/
 ENV N8N_PORT=5678
-ENV N8N_EDITOR_BASE_URL=https://shenzen12-saba-n8n.hf.space/n8n/
-ENV WEBHOOK_URL=https://shenzen12-saba-n8n.hf.space/n8n/
 ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
-# Folder penyimpanan n8n sqlite database di folder yang writeable
-ENV N8N_USER_FOLDER=/tmp/.n8n
 
-# Buat folder log dan pastikan permisi folder /app dan /tmp aman untuk non-root user (Hugging Face user ID 1000)
-RUN mkdir -p /tmp/.n8n /tmp/nginx /var/log/supervisor \
+# Buat folder log/data dan pastikan permission aman untuk non-root user (Hugging Face user ID 1000)
+RUN mkdir -p /data/.n8n /tmp/.n8n /tmp/nginx /var/log/supervisor \
     && sed -i 's/\r$//' /app/entrypoint.sh \
     && sed -i 's/\r$//' /app/run_n8n.sh \
-    && chmod -R 777 /tmp /var/log/supervisor /app \
-    && chmod +x /app/entrypoint.sh /app/run_n8n.sh
+    && sed -i 's/\r$//' /app/n8n_env.sh \
+    && chmod -R 777 /data /tmp /var/log/supervisor /app \
+    && chmod +x /app/entrypoint.sh /app/run_n8n.sh /app/n8n_env.sh
 
 # Jalankan container menggunakan user non-root (HF Spaces requirement)
 USER 1000

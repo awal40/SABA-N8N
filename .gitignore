@@ -18,6 +18,5 @@ pyrightconfig.json
 .DS_Store
 Thumbs.db
 
-# n8n workflow (opsional, hapus baris ini jika ingin di-track)
-# SABA-N8N-V 1.0.json
-SABA-N8N-V 1.0.json
+# n8n workflow boleh di-track setelah semua secret dipindah ke HF Secrets/env.
+# Jangan commit export credentials atau API key plaintext.

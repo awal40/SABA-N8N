@@ -24,21 +24,45 @@ def create_app():
     @app.route('/debug-logs')
     def debug_logs():
         import os
+        from html import escape
+        import requests
+        from flask import abort, request
+
+        if os.getenv('ENABLE_DEBUG_LOGS', 'false').lower() != 'true':
+            abort(404)
+
+        debug_token = os.getenv('DEBUG_LOG_TOKEN')
+        if not debug_token or request.args.get('token') != debug_token:
+            abort(403)
+
         log_files = {
             'supervisord': '/tmp/supervisord.log',
             'nginx_access': '/tmp/nginx_access.log',
-            'nginx_error': '/tmp/nginx_error.log'
+            'nginx_error': '/tmp/nginx_error.log',
+            'n8n': '/tmp/n8n/n8n.log',
         }
         res = "<h1>Debug Logs</h1>"
+        n8n_path = os.getenv('N8N_PATH', '/n8n/')
+        if not n8n_path.startswith('/'):
+            n8n_path = f'/{n8n_path}'
+        if not n8n_path.endswith('/'):
+            n8n_path = f'{n8n_path}/'
+        n8n_url = f"http://127.0.0.1:{os.getenv('N8N_PORT', '5678')}{n8n_path}"
+        try:
+            status = requests.get(n8n_url, timeout=3)
+            res += f"<h2>n8n status</h2><pre>{escape(n8n_url)} -> HTTP {status.status_code}</pre>"
+        except Exception as e:
+            res += f"<h2>n8n status</h2><pre>{escape(n8n_url)} -> ERROR: {escape(str(e))}</pre>"
+
         for name, path in log_files.items():
             res += f"<h2>{name} ({path})</h2>"
             if os.path.exists(path):
                 try:
                     with open(path, 'r') as f:
                         lines = f.readlines()[-100:]  # Last 100 lines
-                        res += f"<pre>{''.join(lines)}</pre>"
+                        res += f"<pre>{escape(''.join(lines))}</pre>"
                 except Exception as e:
-                    res += f"<pre>Error reading file: {e}</pre>"
+                    res += f"<pre>Error reading file: {escape(str(e))}</pre>"
             else:
                 res += f"<pre>File does not exist</pre>"
         return res
