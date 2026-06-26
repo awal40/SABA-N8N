@@ -29,6 +29,8 @@ COPY . .
 # Konfigurasi n8n environment variables agar berjalan di subfolder /n8n/
 ENV N8N_PATH=/n8n/
 ENV N8N_PORT=5678
+ENV N8N_EDITOR_BASE_URL=https://shenzen12-saba-n8n.hf.space/n8n/
+ENV WEBHOOK_URL=https://shenzen12-saba-n8n.hf.space/n8n/
 ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
 # Folder penyimpanan n8n sqlite database di folder yang writeable
 ENV N8N_USER_FOLDER=/tmp/.n8n
