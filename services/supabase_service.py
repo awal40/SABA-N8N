@@ -97,11 +97,11 @@ def get_chat_history(user_id: int, limit: int = 50) -> list:
         client.table('chat_history')
         .select('*')
         .eq('user_id', user_id)
-        .order('created_at', desc=False)
+        .order('created_at', desc=True)
         .limit(limit)
         .execute()
     )
-    return result.data or []
+    return list(reversed(result.data or []))
 
 
 def save_chat_message(
