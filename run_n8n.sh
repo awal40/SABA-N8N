@@ -7,9 +7,13 @@ export WEBHOOK_URL="https://shenzen12-saba-n8n.hf.space/n8n/"
 export N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
 export N8N_USER_FOLDER=/tmp/.n8n
 
+# Gunakan websocket daripada SSE agar tidak diblokir/dibuffer oleh proxy Hugging Face
+export N8N_PUSH_BACKEND="websocket"
+
 echo "=== Memulai n8n dengan Environment: ==="
 echo "N8N_PATH: $N8N_PATH"
 echo "WEBHOOK_URL: $WEBHOOK_URL"
+echo "PUSH_BACKEND: $N8N_PUSH_BACKEND"
 echo "======================================"
 
 # Jalankan n8n
