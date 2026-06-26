@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y \
     supervisor \
     curl \
     gnupg \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    build-essential \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g n8n@${N8N_VERSION} \
     && apt-get clean \
