@@ -20,6 +20,29 @@ def create_app():
     # Register semua blueprint
     register_routes(app)
     
+    # Temporary debug logs endpoint
+    @app.route('/debug-logs')
+    def debug_logs():
+        import os
+        log_files = {
+            'supervisord': '/tmp/supervisord.log',
+            'nginx_access': '/tmp/nginx_access.log',
+            'nginx_error': '/tmp/nginx_error.log'
+        }
+        res = "<h1>Debug Logs</h1>"
+        for name, path in log_files.items():
+            res += f"<h2>{name} ({path})</h2>"
+            if os.path.exists(path):
+                try:
+                    with open(path, 'r') as f:
+                        lines = f.readlines()[-100:]  # Last 100 lines
+                        res += f"<pre>{''.join(lines)}</pre>"
+                except Exception as e:
+                    res += f"<pre>Error reading file: {e}</pre>"
+            else:
+                res += f"<pre>File does not exist</pre>"
+        return res
+    
     # Setup APScheduler untuk auto-delete audio expired
     try:
         from apscheduler.schedulers.background import BackgroundScheduler
