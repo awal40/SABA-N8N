@@ -20,21 +20,28 @@ IMPORT_MARKER="${N8N_USER_FOLDER}/.saba_workflow_imported"
 
 if [[ ! -f "$N8N_IMPORT_FILE" ]]; then
   echo "[Auto-Import] Lewati import: file workflow tidak ditemukan di $N8N_IMPORT_FILE"
-elif [[ -f "$IMPORT_MARKER" && "${FORCE_N8N_IMPORT:-false}" != "true" ]]; then
-  echo "[Auto-Import] Workflow sudah pernah di-import. Set FORCE_N8N_IMPORT=true untuk import ulang."
-elif n8n import:workflow --input="$N8N_IMPORT_FILE"; then
-  echo "[Auto-Import] Workflow n8n berhasil di-import."
-  touch "$IMPORT_MARKER"
-
-  if [[ "${AUTO_ACTIVATE_N8N_WORKFLOWS:-true}" == "true" ]]; then
-    if n8n update:workflow --all --active=true; then
-      echo "[Auto-Import] Workflow n8n berhasil diaktifkan."
-    else
-      echo "[Auto-Import] Import berhasil, tetapi aktivasi workflow gagal. Aktifkan manual dari UI n8n."
-    fi
-  fi
 else
-  echo "[Auto-Import] Gagal mengimport workflow. Cek /tmp/n8n/n8n.log atau log Hugging Face."
+  IMPORT_HASH="$(sha256sum "$N8N_IMPORT_FILE" | awk '{print $1}')"
+
+  if [[ -f "$IMPORT_MARKER" && "$(cat "$IMPORT_MARKER")" == "$IMPORT_HASH" && "${FORCE_N8N_IMPORT:-false}" != "true" ]]; then
+    echo "[Auto-Import] Workflow file belum berubah. Set FORCE_N8N_IMPORT=true untuk import ulang."
+  elif n8n import:workflow --input="$N8N_IMPORT_FILE"; then
+    echo "[Auto-Import] Workflow n8n berhasil di-import."
+    echo "$IMPORT_HASH" > "$IMPORT_MARKER"
+
+    if [[ "${AUTO_ACTIVATE_N8N_WORKFLOWS:-true}" == "true" ]]; then
+      WORKFLOW_ID="$(N8N_IMPORT_FILE="$N8N_IMPORT_FILE" python3 -c 'import json, os; print(json.load(open(os.environ["N8N_IMPORT_FILE"])).get("id", ""))')"
+      if [[ -z "$WORKFLOW_ID" ]]; then
+        echo "[Auto-Import] Import berhasil, tetapi workflow ID kosong. Aktifkan manual dari UI n8n."
+      elif n8n update:workflow --id="$WORKFLOW_ID" --active=true; then
+        echo "[Auto-Import] Workflow n8n berhasil diaktifkan."
+      else
+        echo "[Auto-Import] Import berhasil, tetapi aktivasi workflow gagal. Aktifkan manual dari UI n8n."
+      fi
+    fi
+  else
+    echo "[Auto-Import] Gagal mengimport workflow. Cek /tmp/n8n/n8n.log atau log Hugging Face."
+  fi
 fi
 
 # Jalankan supervisord sebagai proses utama
