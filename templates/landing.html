@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}SABA — Catat Bisnis Cukup dengan Bicara{% endblock %}
+{% block meta_description %}SABA membantu pelaku UMKM mencatat penjualan, harga, dan stok melalui perintah suara yang tersimpan otomatis di Google Sheets.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="landing-page">
+    <nav class="landing-nav" aria-label="Navigasi utama">
+        <div class="landing-shell landing-nav-inner">
+            <a class="landing-brand" href="#top" aria-label="SABA beranda">
+                <span class="brand-icon"><i class="bi bi-mic-fill"></i></span>
+                <span class="brand-text">SABA</span>
+            </a>
+
+            <div class="landing-nav-links" aria-label="Tautan halaman">
+                <a href="#manfaat">Manfaat</a>
+                <a href="#cara-kerja">Cara kerja</a>
+                <a href="#contoh-perintah">Contoh perintah</a>
+                <a href="#faq">FAQ</a>
+            </div>
+
+            <div class="landing-nav-actions">
+                <button class="btn-theme-toggle" id="theme-toggle" type="button" title="Ganti tema" aria-label="Ganti tema tampilan">
+                    <i class="bi bi-moon-stars-fill" id="theme-icon"></i>
+                </button>
+                <a class="landing-login-link" href="{{ url_for('auth.login') }}">Masuk</a>
+                <a class="landing-button landing-button-sm" href="{{ url_for('auth.google_login') }}">Mulai gratis</a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="top">
+        <section class="landing-hero landing-shell" aria-labelledby="hero-title">
+            <div class="landing-hero-copy">
+                <div class="landing-eyebrow">
+                    <span class="landing-eyebrow-dot"></span>
+                    Asisten suara untuk UMKM Indonesia
+                </div>
+                <h1 id="hero-title">Catat bisnis sambil <span>tetap melayani.</span></h1>
+                <p class="landing-hero-lead">
+                    Ucapkan penjualan, perubahan harga, atau pergerakan stok. SABA memahami perintah Anda dan merapikannya otomatis ke Google Sheets.
+                </p>
+                <div class="landing-hero-actions">
+                    <a class="landing-button" href="{{ url_for('auth.google_login') }}">
+                        <i class="bi bi-google"></i>Mulai dengan Google
+                    </a>
+                    <a class="landing-button landing-button-ghost" href="#cara-kerja">
+                        Lihat cara kerja<i class="bi bi-arrow-down"></i>
+                    </a>
+                </div>
+                <div class="landing-trust-row" aria-label="Keunggulan singkat">
+                    <span><i class="bi bi-check-circle-fill"></i>Tanpa instalasi</span>
+                    <span><i class="bi bi-check-circle-fill"></i>Data milik Anda</span>
+                    <span><i class="bi bi-check-circle-fill"></i>Siap di ponsel</span>
+                </div>
+            </div>
+
+            <div class="landing-demo-wrap" aria-label="Contoh percakapan dengan SABA">
+                <div class="landing-demo-glow"></div>
+                <div class="landing-demo-card">
+                    <div class="landing-demo-head">
+                        <div>
+                            <span class="landing-demo-status"></span>
+                            Asisten aktif
+                        </div>
+                        <span>Hari ini</span>
+                    </div>
+                    <div class="landing-demo-body">
+                        <div class="demo-message demo-message-user">
+                            <span class="demo-label">Anda</span>
+                            <div class="demo-bubble demo-bubble-user">
+                                <div class="demo-audio">
+                                    <span class="demo-play"><i class="bi bi-play-fill"></i></span>
+                                    <span class="demo-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                                    <small>00:04</small>
+                                </div>
+                                <p>“Jual kopi susu 3 botol.”</p>
+                            </div>
+                        </div>
+                        <div class="demo-message demo-message-ai">
+                            <span class="demo-label"><i class="bi bi-robot"></i> SABA AI</span>
+                            <div class="demo-bubble demo-bubble-ai">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <p>Transaksi kopi susu 3 botol berhasil. Sisa stok: 17 botol.</p>
+                            </div>
+                        </div>
+                        <div class="demo-sheet-row">
+                            <span class="demo-sheet-icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i></span>
+                            <span><strong>Google Sheets diperbarui</strong><small>Transaksi, stok, dan total tersimpan</small></span>
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                    </div>
+                    <div class="landing-demo-mic" aria-hidden="true"><i class="bi bi-mic-fill"></i></div>
+                </div>
+                <div class="landing-float-card landing-float-stock">
+                    <i class="bi bi-box-seam-fill"></i><span><small>Stok otomatis</small><strong>17 botol</strong></span>
+                </div>
+                <div class="landing-float-card landing-float-speed">
+                    <i class="bi bi-lightning-charge-fill"></i><span><small>Tercatat dalam</small><strong>Beberapa detik</strong></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="landing-proof" aria-label="Ringkasan kemampuan">
+            <div class="landing-shell landing-proof-grid">
+                <div><strong>4</strong><span>jenis perintah utama</span></div>
+                <div><strong>1</strong><span>Google Sheet milik Anda</span></div>
+                <div><strong>24/7</strong><span>siap membantu pencatatan</span></div>
+                <div><strong>Real-time</strong><span>dashboard penjualan & stok</span></div>
+            </div>
+        </section>
+
+        <section class="landing-section landing-shell" id="manfaat" aria-labelledby="benefit-title">
+            <div class="landing-section-heading">
+                <span class="landing-kicker">Dibuat untuk ritme UMKM</span>
+                <h2 id="benefit-title">Lebih sedikit mengetik, lebih banyak melayani.</h2>
+                <p>Satu alur sederhana dari suara hingga laporan yang siap dibaca.</p>
+            </div>
+            <div class="landing-feature-grid">
+                <article class="landing-feature-card landing-feature-primary">
+                    <span class="landing-feature-icon"><i class="bi bi-soundwave"></i></span>
+                    <h3>Pencatatan lewat suara</h3>
+                    <p>Tetap fokus pada pelanggan. Sebutkan produk, jumlah, dan satuan dengan bahasa sehari-hari.</p>
+                    <div class="landing-mini-command">“Tadi laku nasi goreng 5 porsi.”</div>
+                </article>
+                <article class="landing-feature-card">
+                    <span class="landing-feature-icon"><i class="bi bi-boxes"></i></span>
+                    <h3>Stok ikut bergerak</h3>
+                    <p>Penjualan mengurangi stok. Restok, barang rusak, dan stok hilang dapat dicatat tanpa membuka tabel.</p>
+                </article>
+                <article class="landing-feature-card">
+                    <span class="landing-feature-icon"><i class="bi bi-graph-up-arrow"></i></span>
+                    <h3>Ringkasan siap dipantau</h3>
+                    <p>Lihat omzet, produk terlaris, margin, transaksi, dan peringatan stok menipis dari satu dashboard.</p>
+                </article>
+                <article class="landing-feature-card">
+                    <span class="landing-feature-icon"><i class="bi bi-shield-check"></i></span>
+                    <h3>Data tetap dalam kendali</h3>
+                    <p>Catatan bisnis tersimpan pada Google Spreadsheet yang dibuat khusus untuk akun Anda.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="landing-section landing-how" id="cara-kerja" aria-labelledby="how-title">
+            <div class="landing-shell">
+                <div class="landing-section-heading">
+                    <span class="landing-kicker">Cara kerja</span>
+                    <h2 id="how-title">Dari ucapan menjadi catatan dalam tiga langkah.</h2>
+                </div>
+                <div class="landing-steps">
+                    <article>
+                        <span class="landing-step-number">01</span>
+                        <div class="landing-step-icon"><i class="bi bi-mic-fill"></i></div>
+                        <h3>Tahan dan bicara</h3>
+                        <p>Tekan tombol mikrofon, lalu sampaikan satu kebutuhan dengan jelas.</p>
+                    </article>
+                    <span class="landing-step-line" aria-hidden="true"><i class="bi bi-arrow-right"></i></span>
+                    <article>
+                        <span class="landing-step-number">02</span>
+                        <div class="landing-step-icon"><i class="bi bi-stars"></i></div>
+                        <h3>AI memahami maksud</h3>
+                        <p>Sistem mengenali apakah Anda sedang menjual, mengatur harga, atau mengubah stok.</p>
+                    </article>
+                    <span class="landing-step-line" aria-hidden="true"><i class="bi bi-arrow-right"></i></span>
+                    <article>
+                        <span class="landing-step-number">03</span>
+                        <div class="landing-step-icon"><i class="bi bi-bar-chart-fill"></i></div>
+                        <h3>Data dan dashboard diperbarui</h3>
+                        <p>Google Sheets dan ringkasan bisnis langsung mengikuti catatan terbaru.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="landing-section landing-shell" id="contoh-perintah" aria-labelledby="commands-title">
+            <div class="landing-section-heading landing-heading-split">
+                <div>
+                    <span class="landing-kicker">Bicara secara alami</span>
+                    <h2 id="commands-title">Empat pekerjaan rutin, satu asisten.</h2>
+                </div>
+                <p>Gunakan satu perintah untuk satu pekerjaan agar hasilnya akurat.</p>
+            </div>
+            <div class="landing-command-grid">
+                <article>
+                    <span class="landing-command-icon command-purple"><i class="bi bi-bag-check-fill"></i></span>
+                    <span class="landing-command-type">Penjualan</span>
+                    <blockquote>“Jual keripik pisang 4 bungkus.”</blockquote>
+                    <p>Transaksi tercatat dan stok otomatis berkurang.</p>
+                </article>
+                <article>
+                    <span class="landing-command-icon command-cyan"><i class="bi bi-tag-fill"></i></span>
+                    <span class="landing-command-type">Produk & harga</span>
+                    <blockquote>“Harga jual kopi susu 15 ribu, modal 8 ribu, stok 20 botol.”</blockquote>
+                    <p>Membuat produk baru atau memperbarui harga produk lama.</p>
+                </article>
+                <article>
+                    <span class="landing-command-icon command-green"><i class="bi bi-box-arrow-in-down"></i></span>
+                    <span class="landing-command-type">Tambah stok</span>
+                    <blockquote>“Tambah stok kopi susu 12 botol.”</blockquote>
+                    <p>Stok masuk ditambahkan ke jumlah yang tersedia.</p>
+                </article>
+                <article>
+                    <span class="landing-command-icon command-orange"><i class="bi bi-box-arrow-up"></i></span>
+                    <span class="landing-command-type">Kurangi stok</span>
+                    <blockquote>“Kopi susu rusak 2 botol.”</blockquote>
+                    <p>Stok berkurang dengan alasan yang jelas, tanpa menjadi penjualan.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="landing-section landing-data-section">
+            <div class="landing-shell landing-data-grid">
+                <div class="landing-data-copy">
+                    <span class="landing-kicker">Rapi, transparan, tetap milik Anda</span>
+                    <h2>Teknologi membantu. Anda tetap memegang kendali.</h2>
+                    <p>Setiap akun memiliki spreadsheet bisnis sendiri. Dashboard membaca data tersebut untuk membuat laporan yang mudah dipahami.</p>
+                    <ul>
+                        <li><i class="bi bi-check2"></i>Masuk aman melalui akun Google</li>
+                        <li><i class="bi bi-check2"></i>Data transaksi dapat diperiksa kapan saja</li>
+                        <li><i class="bi bi-check2"></i>Produk dan transaksi dapat dikelola dari dashboard</li>
+                    </ul>
+                </div>
+                <div class="landing-sheet-card" aria-label="Ilustrasi struktur data bisnis">
+                    <div class="landing-sheet-head">
+                        <span><i class="bi bi-file-earmark-spreadsheet-fill"></i> Data Bisnis Saya</span>
+                        <span class="landing-sheet-live">Tersinkron</span>
+                    </div>
+                    <div class="landing-sheet-tabs"><span class="active">Transaksi</span><span>Produk</span></div>
+                    <div class="landing-sheet-table">
+                        <div class="sheet-row sheet-header"><span>Produk</span><span>Jumlah</span><span>Total</span></div>
+                        <div class="sheet-row"><span>Kopi susu</span><span>3 botol</span><span>Rp45.000</span></div>
+                        <div class="sheet-row"><span>Keripik pisang</span><span>4 bungkus</span><span>Rp40.000</span></div>
+                        <div class="sheet-row sheet-muted"><span>Nasi goreng</span><span>5 porsi</span><span>Rp75.000</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="landing-section landing-shell landing-faq" id="faq" aria-labelledby="faq-title">
+            <div class="landing-section-heading">
+                <span class="landing-kicker">Pertanyaan umum</span>
+                <h2 id="faq-title">Yang perlu diketahui sebelum mulai.</h2>
+            </div>
+            <div class="landing-faq-list">
+                <details>
+                    <summary>Apakah harus menggunakan bahasa yang kaku?<i class="bi bi-plus-lg"></i></summary>
+                    <p>Tidak. Gunakan bahasa Indonesia sehari-hari, tetapi sebutkan nama produk, jumlah, dan satuan dengan jelas.</p>
+                </details>
+                <details>
+                    <summary>Di mana data bisnis saya disimpan?<i class="bi bi-plus-lg"></i></summary>
+                    <p>Sistem membuat Google Spreadsheet khusus pada akun Anda untuk menyimpan data produk dan transaksi.</p>
+                </details>
+                <details>
+                    <summary>Bisakah harga dan stok diubah lewat suara?<i class="bi bi-plus-lg"></i></summary>
+                    <p>Bisa. Harga jual, modal, stok masuk, dan stok berkurang memiliki pola perintah yang tersedia di Pusat Panduan setelah login.</p>
+                </details>
+                <details>
+                    <summary>Apakah dapat digunakan melalui ponsel?<i class="bi bi-plus-lg"></i></summary>
+                    <p>Ya. Halaman chat, dashboard, onboarding, dan panduan dirancang responsif untuk layar desktop maupun ponsel.</p>
+                </details>
+            </div>
+        </section>
+
+        <section class="landing-cta landing-shell">
+            <div class="landing-cta-inner">
+                <div>
+                    <span class="landing-kicker">Siap merapikan pencatatan?</span>
+                    <h2>Mulai dari satu ucapan hari ini.</h2>
+                    <p>Masuk dengan Google, ikuti panduan singkat, lalu catat transaksi pertama Anda.</p>
+                </div>
+                <a class="landing-button landing-button-light" href="{{ url_for('auth.google_login') }}">
+                    Mulai gratis<i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="landing-footer">
+        <div class="landing-shell landing-footer-inner">
+            <a class="landing-brand" href="#top">
+                <span class="brand-icon"><i class="bi bi-mic-fill"></i></span>
+                <span class="brand-text">SABA</span>
+            </a>
+            <p>Asisten pencatatan suara untuk bisnis yang terus bergerak.</p>
+            <span>&copy; 2026 SABA</span>
+        </div>
+    </footer>
+</div>
+{% endblock %}

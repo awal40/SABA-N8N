@@ -1,5 +1,5 @@
 """
-app.py - Entry point aplikasi SABA-N8N.
+app.py - Entry point aplikasi SABA.
 Flask application factory, konfigurasi server, dan APScheduler.
 """
 

@@ -4,7 +4,7 @@ Menangani login, callback, logout, dan auto-refresh token.
 """
 
 import requests
-from flask import Blueprint, redirect, url_for, session, request, flash
+from flask import Blueprint, redirect, url_for, session, request, flash, render_template
 from google_auth_oauthlib.flow import Flow
 from config import Config
 from services import supabase_service
@@ -82,10 +82,10 @@ def _create_oauth_flow():
 
 @auth_bp.route('/')
 def index():
-    """Redirect ke dashboard jika sudah login, ke login jika belum."""
+    """Landing page publik, atau langsung ke chat jika sudah login."""
     if 'user' in session:
         return redirect(url_for('chat.chat_page'))
-    return redirect(url_for('auth.login'))
+    return render_template('landing.html', user=None)
 
 
 @auth_bp.route('/login')
@@ -93,7 +93,7 @@ def login():
     """Halaman login."""
     if 'user' in session:
         return redirect(url_for('chat.chat_page'))
-    return __import__('flask').render_template('login.html')
+    return render_template('login.html', user=None)
 
 
 @auth_bp.route('/auth/google')
@@ -195,4 +195,4 @@ def logout():
     """Logout dan hapus session."""
     session.clear()
     flash('Anda telah logout.', 'info')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('auth.index'))

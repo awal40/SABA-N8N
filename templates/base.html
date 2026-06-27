@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SABA-N8N - Catat transaksi penjualan dengan suara">
-    <title>{% block title %}SABA-N8N{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}SABA - Catat transaksi penjualan dengan suara{% endblock %}">
+    <meta name="theme-color" content="#6366f1">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+    <title>{% block title %}SABA{% endblock %}</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +28,9 @@
     
     <!-- App CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% if user %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/guide.css') }}">
+    {% endif %}
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -38,11 +43,11 @@
                 <div class="brand-icon">
                     <i class="bi bi-mic-fill"></i>
                 </div>
-                <span class="brand-text">SABA<span class="text-accent">-N8N</span></span>
+                <span class="brand-text">SABA</span>
             </a>
             
             <!-- Mobile Toggle -->
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Buka navigasi">
                 <i class="bi bi-list fs-5"></i>
             </button>
             
@@ -51,14 +56,19 @@
                 <!-- Nav Links -->
                 <ul class="navbar-nav me-auto ms-lg-3">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/chat' %}active{% endif %}" href="{{ url_for('chat.chat_page') }}">
+                        <a class="nav-link {% if request.path == '/chat' %}active{% endif %}" href="{{ url_for('chat.chat_page') }}" id="nav-chat-link">
                             <i class="bi bi-chat-dots-fill me-1"></i>Chat
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="{{ url_for('dashboard.dashboard') }}">
+                        <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="{{ url_for('dashboard.dashboard') }}" id="nav-dashboard-link">
                             <i class="bi bi-grid-1x2-fill me-1"></i>Dashboard
                         </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link guide-nav-button" type="button" data-guide-open="library">
+                            <i class="bi bi-question-circle-fill me-1"></i>Panduan
+                        </button>
                     </li>
                 </ul>
                 
@@ -83,6 +93,12 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><span class="dropdown-item-text small text-muted">{{ user.email }}</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <button class="dropdown-item" type="button" data-guide-open="onboarding">
+                                    <i class="bi bi-compass me-2"></i>Ulangi panduan awal
+                                </button>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
@@ -115,6 +131,10 @@
     <!-- Main Content -->
     {% block content %}{% endblock %}
 
+    {% if user %}
+        {% include '_guide.html' %}
+    {% endif %}
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -129,6 +149,16 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% if user %}
+    <script>
+        window.SABA_GUIDE = {
+            userKey: {{ user.google_id|tojson }},
+            chatUrl: {{ url_for('chat.chat_page')|tojson }},
+            currentPath: {{ request.path|tojson }}
+        };
+    </script>
+    <script src="{{ url_for('static', filename='js/guide.js') }}"></script>
+    {% endif %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

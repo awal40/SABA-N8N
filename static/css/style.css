@@ -1,5 +1,5 @@
 /* ============================================
-   SABA-N8N - Premium Design System
+   SABA - Premium Design System
    Dark / Light Mode Support
    ============================================ */
 
@@ -482,6 +482,21 @@ body::before {
     color: var(--text-muted);
     margin-top: 1.2rem;
     margin-bottom: 0;
+}
+
+.login-back-link {
+    display: block;
+    margin-top: 1rem;
+    color: var(--text-muted);
+    text-align: center;
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.login-back-link:hover {
+    color: var(--primary-light);
 }
 
 
@@ -1739,24 +1754,6 @@ body::before {
         height: 28px;
     }
 
-    /* Chat bubbles */
-    .bubble-wrap {
-        max-width: 92% !important;
-    }
-
-    .bubble {
-        padding: 0.8rem 0.9rem !important;
-        font-size: 0.88rem !important;
-    }
-
-    .bubble-label {
-        font-size: 0.58rem !important;
-    }
-
-    .bubble-time {
-        font-size: 0.58rem !important;
-    }
-
     /* Mic area */
     .floating-mic-container {
         bottom: 1.25rem;
@@ -1767,12 +1764,6 @@ body::before {
         width: 52px;
         height: 52px;
         font-size: 1.1rem;
-    }
-
-    /* Chat messages area tighter padding */
-    .chat-messages-area {
-        padding-left: 0.65rem;
-        padding-right: 0.65rem;
     }
 
     /* Chart smaller */
@@ -1850,11 +1841,6 @@ body::before {
         font-size: 1rem;
     }
 
-    .bubble {
-        padding: 0.65rem 0.75rem !important;
-        font-size: 0.82rem !important;
-    }
-
     .mic-btn,
     .chat-mic-btn {
         width: 48px;
@@ -1873,4 +1859,3 @@ body::before {
         padding-top: calc(0.6rem + env(safe-area-inset-top));
     }
 }
-

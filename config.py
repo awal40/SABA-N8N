@@ -1,5 +1,5 @@
 """
-config.py - Konfigurasi aplikasi SABA-N8N
+config.py - Konfigurasi aplikasi SABA
 Memuat environment variables dan konstanta konfigurasi.
 """
 

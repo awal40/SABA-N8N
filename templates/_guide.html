@@ -1,0 +1,245 @@
+<div class="guide-overlay" id="guide-overlay" hidden>
+    <section class="guide-dialog" role="dialog" aria-modal="true" aria-labelledby="guide-dialog-title" tabindex="-1">
+        <header class="guide-header">
+            <div class="guide-header-brand">
+                <span class="guide-header-icon"><i class="bi bi-compass-fill"></i></span>
+                <span>
+                    <small id="guide-dialog-eyebrow">Panduan SABA</small>
+                    <strong id="guide-dialog-title">Mulai dengan percaya diri</strong>
+                </span>
+            </div>
+            <button class="guide-icon-button" type="button" data-guide-close aria-label="Tutup panduan">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+
+        <div class="guide-onboarding" id="guide-onboarding">
+            <div class="guide-progress" aria-label="Kemajuan panduan">
+                <div class="guide-progress-dots" aria-hidden="true">
+                    <span class="active"></span><span></span><span></span><span></span>
+                </div>
+                <span id="guide-step-count">1 dari 4</span>
+            </div>
+
+            <div class="guide-onboarding-body">
+                <article class="guide-onboarding-step active" data-guide-step="0">
+                    <div class="guide-welcome-visual" aria-hidden="true">
+                        <span class="guide-orbit guide-orbit-one"><i class="bi bi-bag-check-fill"></i></span>
+                        <span class="guide-orbit guide-orbit-two"><i class="bi bi-box-seam-fill"></i></span>
+                        <span class="guide-welcome-mic"><i class="bi bi-mic-fill"></i></span>
+                        <span class="guide-sound-ring ring-one"></span>
+                        <span class="guide-sound-ring ring-two"></span>
+                    </div>
+                    <span class="guide-step-kicker">Selamat datang, {{ user.name.split(' ')[0] }}</span>
+                    <h2>Catatan bisnis kini cukup diucapkan.</h2>
+                    <p>SABA membantu mencatat penjualan, harga produk, dan pergerakan stok tanpa mengganggu kesibukan Anda melayani pelanggan.</p>
+                    <div class="guide-benefit-row">
+                        <span><i class="bi bi-lightning-charge-fill"></i>Cepat</span>
+                        <span><i class="bi bi-file-earmark-spreadsheet-fill"></i>Tersimpan rapi</span>
+                        <span><i class="bi bi-phone-fill"></i>Siap di ponsel</span>
+                    </div>
+                </article>
+
+                <article class="guide-onboarding-step" data-guide-step="1" hidden>
+                    <span class="guide-step-kicker">Rumus ucapan yang efektif</span>
+                    <h2>Satu kebutuhan, satu kalimat yang jelas.</h2>
+                    <p>Mulai dengan pekerjaan yang ingin dilakukan, lalu sebutkan produk, jumlah, dan satuannya.</p>
+                    <div class="guide-formula" aria-label="Susunan perintah suara">
+                        <span><small>01</small><strong>Tindakan</strong><em>Jual</em></span>
+                        <i class="bi bi-plus-lg"></i>
+                        <span><small>02</small><strong>Produk</strong><em>Kopi susu</em></span>
+                        <i class="bi bi-plus-lg"></i>
+                        <span><small>03</small><strong>Jumlah</strong><em>3</em></span>
+                        <i class="bi bi-plus-lg"></i>
+                        <span><small>04</small><strong>Satuan</strong><em>Botol</em></span>
+                    </div>
+                    <div class="guide-speech-example">
+                        <i class="bi bi-chat-quote-fill"></i>
+                        <span><small>Contoh ucapan</small><strong>“Jual kopi susu 3 botol.”</strong></span>
+                    </div>
+                </article>
+
+                <article class="guide-onboarding-step" data-guide-step="2" hidden>
+                    <span class="guide-step-kicker">Yang dapat Anda kerjakan</span>
+                    <h2>Empat pekerjaan rutin langsung dari chat.</h2>
+                    <p>Gunakan contoh berikut sebagai pola; nama produk dan angkanya bebas disesuaikan.</p>
+                    <div class="guide-task-grid">
+                        <div><i class="bi bi-bag-check-fill"></i><span><strong>Catat penjualan</strong><small>“Jual keripik 4 bungkus.”</small></span></div>
+                        <div><i class="bi bi-tag-fill"></i><span><strong>Atur produk & harga</strong><small>“Harga jual kopi 15 ribu...”</small></span></div>
+                        <div><i class="bi bi-box-arrow-in-down"></i><span><strong>Tambah stok</strong><small>“Restok kopi 10 botol.”</small></span></div>
+                        <div><i class="bi bi-box-arrow-up"></i><span><strong>Kurangi stok</strong><small>“Kopi rusak 2 botol.”</small></span></div>
+                    </div>
+                </article>
+
+                <article class="guide-onboarding-step" data-guide-step="3" hidden>
+                    <div class="guide-ready-icon"><i class="bi bi-check2"></i></div>
+                    <span class="guide-step-kicker">Anda siap mulai</span>
+                    <h2>Tahan mikrofon, bicara, lalu lepaskan.</h2>
+                    <p>Browser akan meminta izin mikrofon ketika pertama kali digunakan. Izinkan akses agar rekaman dapat diproses.</p>
+                    <div class="guide-ready-notes">
+                        <span><i class="bi bi-1-circle-fill"></i>Gunakan satu kebutuhan per rekaman</span>
+                        <span><i class="bi bi-2-circle-fill"></i>Tunggu balasan berhasil sebelum lanjut</span>
+                        <span><i class="bi bi-3-circle-fill"></i>Buka Panduan kapan pun Anda lupa</span>
+                    </div>
+                </article>
+            </div>
+
+            <footer class="guide-onboarding-footer">
+                <button class="guide-text-button" type="button" id="guide-skip">Lewati</button>
+                <div>
+                    <button class="guide-secondary-button" type="button" id="guide-back" disabled>
+                        <i class="bi bi-arrow-left"></i>Kembali
+                    </button>
+                    <button class="guide-primary-button" type="button" id="guide-next">
+                        Lanjut<i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </footer>
+        </div>
+
+        <div class="guide-library" id="guide-library" hidden>
+            <aside class="guide-library-nav" aria-label="Kategori panduan">
+                <button class="active" type="button" data-guide-topic="start"><i class="bi bi-play-circle-fill"></i><span>Mulai menggunakan</span></button>
+                <button type="button" data-guide-topic="product"><i class="bi bi-tag-fill"></i><span>Tambah barang & harga</span></button>
+                <button type="button" data-guide-topic="sale"><i class="bi bi-bag-check-fill"></i><span>Input transaksi</span></button>
+                <button type="button" data-guide-topic="stock-in"><i class="bi bi-box-arrow-in-down"></i><span>Tambah stok</span></button>
+                <button type="button" data-guide-topic="stock-out"><i class="bi bi-box-arrow-up"></i><span>Kurangi stok</span></button>
+                <button type="button" data-guide-topic="dashboard"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard & data</span></button>
+                <button type="button" data-guide-topic="tips"><i class="bi bi-lightbulb-fill"></i><span>Tips agar dipahami</span></button>
+            </aside>
+
+            <div class="guide-library-content">
+                <article class="guide-topic active" data-guide-panel="start">
+                    <span class="guide-topic-kicker">Mulai menggunakan</span>
+                    <h2>Alur sederhana dari suara ke laporan.</h2>
+                    <p class="guide-topic-lead">Tidak perlu menghafal menu. Mulai dari chat, sampaikan kebutuhan, lalu periksa hasilnya.</p>
+                    <div class="guide-flow-list">
+                        <div><span>1</span><i class="bi bi-mic-fill"></i><strong>Tahan mikrofon</strong><p>Tekan dan tahan tombol selama Anda berbicara.</p></div>
+                        <div><span>2</span><i class="bi bi-soundwave"></i><strong>Ucapkan dengan jelas</strong><p>Sebutkan tindakan, produk, jumlah, dan satuan.</p></div>
+                        <div><span>3</span><i class="bi bi-chat-square-check-fill"></i><strong>Periksa balasan</strong><p>Pastikan chatbot memberikan tanda berhasil.</p></div>
+                        <div><span>4</span><i class="bi bi-bar-chart-fill"></i><strong>Lihat Dashboard</strong><p>Pantau perubahan laporan dan stok.</p></div>
+                    </div>
+                    <div class="guide-info-box"><i class="bi bi-info-circle-fill"></i><p>Harga produk perlu didaftarkan sebelum transaksi pertama agar total penjualan dapat dihitung.</p></div>
+                </article>
+
+                <article class="guide-topic" data-guide-panel="product" hidden>
+                    <span class="guide-topic-kicker">Tambah barang & perbarui harga</span>
+                    <h2>Daftarkan produk melalui informasi harga.</h2>
+                    <p class="guide-topic-lead">Sebutkan nama produk, harga jual, modal, dan satuan. Stok awal dapat ditambahkan dalam ucapan yang sama.</p>
+                    <div class="guide-command-card">
+                        <span class="guide-command-label"><i class="bi bi-mic-fill"></i>Ucapkan</span>
+                        <blockquote>Harga jual kopi susu 15 ribu, modal 8 ribu, stok 20 botol.</blockquote>
+                        <div class="guide-command-actions">
+                            <button type="button" data-speak-command="Harga jual kopi susu 15 ribu, modal 8 ribu, stok 20 botol."><i class="bi bi-volume-up-fill"></i>Dengarkan</button>
+                            <button type="button" data-copy-command="Harga jual kopi susu 15 ribu, modal 8 ribu, stok 20 botol."><i class="bi bi-copy"></i>Salin contoh</button>
+                        </div>
+                    </div>
+                    <div class="guide-detail-grid">
+                        <div><strong>Produk baru</strong><p>Jika nama belum ada, produk otomatis dibuat.</p></div>
+                        <div><strong>Produk lama</strong><p>Jika sudah ada, harga dan modal diperbarui.</p></div>
+                    </div>
+                    <div class="guide-warning-box"><i class="bi bi-exclamation-triangle-fill"></i><p>Jangan menggabungkan pembaruan harga dan transaksi penjualan dalam satu rekaman. Tunggu konfirmasi harga, lalu catat penjualan.</p></div>
+                </article>
+
+                <article class="guide-topic" data-guide-panel="sale" hidden>
+                    <span class="guide-topic-kicker">Input transaksi penjualan</span>
+                    <h2>Catat produk yang terjual.</h2>
+                    <p class="guide-topic-lead">Produk harus sudah terdaftar. Harga diambil dari data produk dan stok akan berkurang otomatis.</p>
+                    <div class="guide-command-card">
+                        <span class="guide-command-label"><i class="bi bi-mic-fill"></i>Ucapkan</span>
+                        <blockquote>Jual kopi susu 3 botol.</blockquote>
+                        <div class="guide-command-actions">
+                            <button type="button" data-speak-command="Jual kopi susu 3 botol."><i class="bi bi-volume-up-fill"></i>Dengarkan</button>
+                            <button type="button" data-copy-command="Jual kopi susu 3 botol."><i class="bi bi-copy"></i>Salin contoh</button>
+                        </div>
+                    </div>
+                    <div class="guide-structure-row">
+                        <span><small>Tindakan</small><strong>Jual</strong></span><i class="bi bi-plus"></i>
+                        <span><small>Produk</small><strong>Kopi susu</strong></span><i class="bi bi-plus"></i>
+                        <span><small>Jumlah</small><strong>3</strong></span><i class="bi bi-plus"></i>
+                        <span><small>Satuan</small><strong>Botol</strong></span>
+                    </div>
+                    <div class="guide-info-box"><i class="bi bi-info-circle-fill"></i><p>Kata “jual”, “laku”, atau “terjual” dapat digunakan. Pastikan stok mencukupi sebelum transaksi.</p></div>
+                </article>
+
+                <article class="guide-topic" data-guide-panel="stock-in" hidden>
+                    <span class="guide-topic-kicker">Tambah stok</span>
+                    <h2>Catat barang yang baru masuk.</h2>
+                    <p class="guide-topic-lead">Gunakan untuk restok dari pemasok atau barang baru yang diterima. Ini tidak dihitung sebagai transaksi penjualan.</p>
+                    <div class="guide-command-card command-green-card">
+                        <span class="guide-command-label"><i class="bi bi-mic-fill"></i>Ucapkan</span>
+                        <blockquote>Tambah stok kopi susu 12 botol.</blockquote>
+                        <div class="guide-command-actions">
+                            <button type="button" data-speak-command="Tambah stok kopi susu 12 botol."><i class="bi bi-volume-up-fill"></i>Dengarkan</button>
+                            <button type="button" data-copy-command="Tambah stok kopi susu 12 botol."><i class="bi bi-copy"></i>Salin contoh</button>
+                        </div>
+                    </div>
+                    <div class="guide-phrase-list">
+                        <span>Tambah stok</span><span>Stok masuk</span><span>Restok</span><span>Stok datang</span><span>Terima stok</span>
+                    </div>
+                    <div class="guide-info-box"><i class="bi bi-info-circle-fill"></i><p>Nama produk dan satuan sebaiknya sama dengan data produk agar pencocokan akurat.</p></div>
+                </article>
+
+                <article class="guide-topic" data-guide-panel="stock-out" hidden>
+                    <span class="guide-topic-kicker">Kurangi atau koreksi stok</span>
+                    <h2>Catat stok yang tidak dapat dijual.</h2>
+                    <p class="guide-topic-lead">Gunakan alasan yang jelas seperti rusak, busuk, kedaluwarsa, hilang, dibuang, atau susut.</p>
+                    <div class="guide-command-card command-orange-card">
+                        <span class="guide-command-label"><i class="bi bi-mic-fill"></i>Ucapkan</span>
+                        <blockquote>Kopi susu rusak 2 botol.</blockquote>
+                        <div class="guide-command-actions">
+                            <button type="button" data-speak-command="Kopi susu rusak 2 botol."><i class="bi bi-volume-up-fill"></i>Dengarkan</button>
+                            <button type="button" data-copy-command="Kopi susu rusak 2 botol."><i class="bi bi-copy"></i>Salin contoh</button>
+                        </div>
+                    </div>
+                    <div class="guide-detail-grid">
+                        <div><strong>Sebutkan jumlah</strong><p>Contoh: 2 botol, 1,5 kg, atau 3 bungkus.</p></div>
+                        <div><strong>Sebutkan alasan</strong><p>Contoh: rusak, busuk, hilang, atau kedaluwarsa.</p></div>
+                    </div>
+                    <div class="guide-warning-box"><i class="bi bi-exclamation-triangle-fill"></i><p>Jangan memakai kata “jual” untuk koreksi stok karena perintah dapat dianggap sebagai transaksi.</p></div>
+                </article>
+
+                <article class="guide-topic" data-guide-panel="dashboard" hidden>
+                    <span class="guide-topic-kicker">Dashboard & pengelolaan data</span>
+                    <h2>Pantau hasil, lalu kelola bila diperlukan.</h2>
+                    <p class="guide-topic-lead">Dashboard mengubah data spreadsheet menjadi ringkasan bisnis yang lebih mudah dibaca.</p>
+                    <div class="guide-dashboard-grid">
+                        <div><i class="bi bi-cash-stack"></i><span><strong>Omzet & keuntungan</strong><small>Ringkasan sesuai periode pilihan.</small></span></div>
+                        <div><i class="bi bi-trophy-fill"></i><span><strong>Produk terlaris</strong><small>Lihat produk dengan performa terbaik.</small></span></div>
+                        <div><i class="bi bi-exclamation-triangle-fill"></i><span><strong>Stok menipis</strong><small>Peringatan saat stok berada di bawah batas.</small></span></div>
+                        <div><i class="bi bi-table"></i><span><strong>Tabel data</strong><small>Periksa produk dan transaksi terbaru.</small></span></div>
+                    </div>
+                    <a class="guide-primary-button guide-inline-link" href="{{ url_for('dashboard.dashboard') }}">Buka Dashboard<i class="bi bi-arrow-right"></i></a>
+                    <div class="guide-warning-box"><i class="bi bi-trash3-fill"></i><p>Penghapusan data bersifat permanen. Periksa nama produk atau transaksi sebelum mengonfirmasi.</p></div>
+                </article>
+
+                <article class="guide-topic" data-guide-panel="tips" hidden>
+                    <span class="guide-topic-kicker">Tips agar mudah dipahami</span>
+                    <h2>Ucapan sederhana memberikan hasil terbaik.</h2>
+                    <div class="guide-tips-list">
+                        <div><span>01</span><p><strong>Satu pekerjaan per rekaman.</strong> Pisahkan pembaruan harga, transaksi, dan stok.</p></div>
+                        <div><span>02</span><p><strong>Sebutkan satuan.</strong> Gunakan kg, gram, liter, ml, buah, pcs, porsi, bungkus, botol, atau satuan lain yang sesuai.</p></div>
+                        <div><span>03</span><p><strong>Gunakan nama yang konsisten.</strong> “Kopi susu” dan “es kopi susu” dapat dibaca sebagai dua produk berbeda.</p></div>
+                        <div><span>04</span><p><strong>Tunggu konfirmasi.</strong> Pastikan satu perintah berhasil sebelum merekam perintah berikutnya.</p></div>
+                        <div><span>05</span><p><strong>Hindari tempat bising.</strong> Dekatkan ponsel dan bicara dengan kecepatan normal.</p></div>
+                    </div>
+                    <div class="guide-info-box"><i class="bi bi-arrow-repeat"></i><p>Jika perintah tidak dipahami, ulangi dengan format: tindakan + produk + jumlah + satuan.</p></div>
+                </article>
+            </div>
+
+            <footer class="guide-library-footer">
+                <button class="guide-text-button" type="button" data-guide-open="onboarding"><i class="bi bi-arrow-counterclockwise"></i>Ulangi pengenalan</button>
+                <button class="guide-primary-button" type="button" data-guide-go-chat>Buka Chat<i class="bi bi-chat-dots-fill"></i></button>
+            </footer>
+        </div>
+    </section>
+</div>
+
+<div class="guide-coachmark" id="guide-mic-coachmark" role="status" hidden>
+    <button type="button" class="guide-coachmark-close" aria-label="Tutup petunjuk"><i class="bi bi-x"></i></button>
+    <strong>Tahan untuk merekam</strong>
+    <span>Lepaskan tombol setelah selesai berbicara.</span>
+    <button type="button" class="guide-coachmark-done">Mengerti</button>
+</div>
+
+<div class="guide-toast" id="guide-toast" role="status" aria-live="polite" hidden></div>
