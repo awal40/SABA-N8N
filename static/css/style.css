@@ -30,12 +30,12 @@
     --bg-navbar: rgba(15, 23, 42, 0.85);
     --bg-surface: #334155;
     
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
     
-    --border-color: rgba(148, 163, 184, 0.12);
-    --border-color-hover: rgba(148, 163, 184, 0.25);
+    --border-color: rgba(148, 163, 184, 0.2);
+    --border-color-hover: rgba(148, 163, 184, 0.36);
     
     /* Shadows */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);

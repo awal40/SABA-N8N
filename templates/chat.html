@@ -26,6 +26,8 @@
         margin: 0 auto;
         width: 100%;
         scroll-behavior: smooth;
+        position: relative;
+        z-index: 1;
     }
 
     /* Bubble alignment must be controlled by their direct parent. */
@@ -188,6 +190,34 @@
         border: 1px solid var(--border-color);
     }
 
+    /* Dark mode needs stronger separation than the page background. */
+    [data-bs-theme="dark"] .bubble.ai {
+        background: #202e43;
+        color: #f8fafc;
+        border-color: rgba(148, 163, 184, 0.3);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-bs-theme="dark"] .bubble.expired {
+        background: #2a3a50;
+        color: #cbd5e1;
+        border-color: rgba(148, 163, 184, 0.34);
+    }
+
+    [data-bs-theme="dark"] .bubble.expired > .d-flex {
+        opacity: 0.85 !important;
+    }
+
+    [data-bs-theme="dark"] .bubble-time {
+        color: #94a3b8;
+    }
+
+    [data-bs-theme="dark"] .date-separator span {
+        color: #cbd5e1;
+        background: #334155;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+    }
+
     /* Typing Indicator */
     .typing-dots {
         display: flex;
@@ -317,7 +347,7 @@
         height: 180px;
         background: linear-gradient(to bottom, transparent 0%, var(--chat-bg) 70%);
         pointer-events: none;
-        z-index: 10;
+        z-index: 0;
     }
 
     /* ---- Mobile Chat Responsive ---- */

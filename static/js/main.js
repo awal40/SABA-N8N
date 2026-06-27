@@ -6,7 +6,7 @@
 // ==================== DARK/LIGHT MODE ====================
 
 (function initTheme() {
-    const saved = localStorage.getItem('theme') || 'dark';
+    const saved = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-bs-theme', saved);
     
     // Update icon setelah DOM ready
