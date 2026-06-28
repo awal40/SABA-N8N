@@ -5,7 +5,7 @@ dan auto-refresh access token menggunakan refresh_token.
 """
 
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from config import Config
@@ -448,8 +448,8 @@ def get_dashboard_data(access_token: str, spreadsheet_id: str, date_from: str = 
     if not d_from and not d_to:
         d_from = d_to = datetime.now().date()
 
-    # Filter transaksi berdasarkan rentang tanggal
-    filtered = []
+    # Parse tanggal transaksi sekali agar filter, perbandingan, dan sorting konsisten.
+    parsed_transactions = []
     for t in transaksi:
         try:
             tanggal = datetime.strptime(t.get('tanggal', ''), '%Y-%m-%d').date()
@@ -459,6 +459,11 @@ def get_dashboard_data(access_token: str, spreadsheet_id: str, date_from: str = 
             except (ValueError, TypeError):
                 continue
 
+        parsed_transactions.append((t, tanggal))
+
+    # Filter transaksi berdasarkan rentang tanggal
+    filtered_with_dates = []
+    for t, tanggal in parsed_transactions:
         include = True
         if d_from and tanggal < d_from:
             include = False
@@ -466,14 +471,16 @@ def get_dashboard_data(access_token: str, spreadsheet_id: str, date_from: str = 
             include = False
 
         if include:
-            filtered.append(t)
+            filtered_with_dates.append((t, tanggal))
+
+    filtered = [t for t, _tanggal in filtered_with_dates]
 
     # Hitung statistik
     total_penjualan = 0
     produk_counter = {}
     daily_sales = {}
 
-    for t in filtered:
+    for t, tanggal in filtered_with_dates:
         try:
             total = float(str(t.get('total', '0')).replace(',', '').replace('.', '', str(t.get('total', '0')).count('.') - 1) if '.' in str(t.get('total', '0')) else str(t.get('total', '0')).replace(',', ''))
         except (ValueError, TypeError):
@@ -490,8 +497,7 @@ def get_dashboard_data(access_token: str, spreadsheet_id: str, date_from: str = 
         produk_counter[nama_produk] = produk_counter.get(nama_produk, 0) + jumlah
 
         # Hitung penjualan harian
-        tanggal_str = t.get('tanggal', '')
-        daily_sales[tanggal_str] = daily_sales.get(tanggal_str, 0) + total
+        daily_sales[tanggal] = daily_sales.get(tanggal, 0) + total
 
     # Produk terlaris
     produk_terlaris = '-'
@@ -501,25 +507,74 @@ def get_dashboard_data(access_token: str, spreadsheet_id: str, date_from: str = 
     # Hitung margin per produk
     produk_dict = {p.get('nama_produk', ''): p for p in produk}
 
-    margin_data = []
-    for nama, count in produk_counter.items():
-        if nama in produk_dict:
-            try:
-                harga_jual = float(str(produk_dict[nama].get('harga_jual', '0')).replace(',', ''))
-                modal = float(str(produk_dict[nama].get('modal', '0')).replace(',', ''))
-                margin = (harga_jual - modal) * count
-                margin_data.append({
-                    'nama_produk': nama,
-                    'margin': margin,
-                    'harga_jual': harga_jual,
-                    'modal': modal,
-                    'jumlah_terjual': count,
-                })
-            except (ValueError, TypeError):
-                pass
+    def build_margin_data(counter):
+        result = []
+        for nama, count in counter.items():
+            if nama in produk_dict:
+                try:
+                    harga_jual = float(str(produk_dict[nama].get('harga_jual', '0')).replace(',', ''))
+                    modal = float(str(produk_dict[nama].get('modal', '0')).replace(',', ''))
+                    margin = (harga_jual - modal) * count
+                    result.append({
+                        'nama_produk': nama,
+                        'margin': margin,
+                        'harga_jual': harga_jual,
+                        'modal': modal,
+                        'jumlah_terjual': count,
+                    })
+                except (ValueError, TypeError):
+                    pass
+        return result
+
+    margin_data = build_margin_data(produk_counter)
+
+    # Bandingkan dengan rentang sebelumnya yang memiliki durasi sama.
+    previous_filtered = []
+    if d_from and d_to:
+        period_days = max((d_to - d_from).days + 1, 1)
+        previous_to = d_from - timedelta(days=1)
+        previous_from = previous_to - timedelta(days=period_days - 1)
+        previous_filtered = [
+            t for t, tanggal in parsed_transactions
+            if previous_from <= tanggal <= previous_to
+        ]
+    else:
+        previous_from = previous_to = None
+
+    previous_sales = 0
+    previous_product_counter = {}
+    for t in previous_filtered:
+        try:
+            total = float(str(t.get('total', '0')).replace(',', ''))
+        except (ValueError, TypeError):
+            total = 0
+        previous_sales += total
+
+        try:
+            jumlah = float(str(t.get('jumlah', '0')).replace(',', ''))
+        except (ValueError, TypeError):
+            jumlah = 0
+        nama_produk = t.get('produk', 'Unknown')
+        previous_product_counter[nama_produk] = previous_product_counter.get(nama_produk, 0) + jumlah
+
+    previous_margin = sum(
+        item.get('margin', 0) for item in build_margin_data(previous_product_counter)
+    )
+
+    def percentage_change(current, previous):
+        if previous == 0:
+            return None
+        return round(((current - previous) / abs(previous)) * 100, 1)
 
     # Sort daily sales by date
-    sorted_daily = sorted(daily_sales.items())
+    sorted_daily = sorted(daily_sales.items(), key=lambda item: item[0])
+    sorted_transactions = [
+        item[0] for item in sorted(
+            filtered_with_dates,
+            key=lambda item: (item[1], item[0].get('waktu', '')),
+            reverse=True,
+        )
+    ]
 
     # Hitung total margin
     total_margin = sum(m.get('margin', 0) for m in margin_data)
@@ -544,12 +599,24 @@ def get_dashboard_data(access_token: str, spreadsheet_id: str, date_from: str = 
         'total_penjualan': total_penjualan,
         'jumlah_transaksi': len(filtered),
         'produk_terlaris': produk_terlaris,
+        'produk_terlaris_qty': produk_counter.get(produk_terlaris, 0) if produk_terlaris != '-' else 0,
         'total_margin': total_margin,
         'margin_data': margin_data,
-        'daily_labels': [d[0] for d in sorted_daily],
+        'daily_labels': [d[0].isoformat() for d in sorted_daily],
         'daily_values': [d[1] for d in sorted_daily],
-        'transaksi_terbaru': filtered[-10:] if filtered else [],
-        'transaksi_list': filtered,
+        'transaksi_terbaru': sorted_transactions[:5],
+        'transaksi_list': sorted_transactions,
         'produk_list': produk,
         'stok_menipis': stok_menipis,
+        'period': {
+            'from': d_from.isoformat() if d_from else '',
+            'to': d_to.isoformat() if d_to else '',
+            'previous_from': previous_from.isoformat() if previous_from else '',
+            'previous_to': previous_to.isoformat() if previous_to else '',
+        },
+        'comparison': {
+            'sales_change': percentage_change(total_penjualan, previous_sales),
+            'transactions_change': percentage_change(len(filtered), len(previous_filtered)),
+            'margin_change': percentage_change(total_margin, previous_margin),
+        },
     }

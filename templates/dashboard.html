@@ -3,494 +3,193 @@
 {% block title %}Dashboard - SABA{% endblock %}
 
 {% block extra_css %}
-<style>
-    .stat-card { animation-delay: calc(var(--i) * 0.1s); }
-
-    /* ===== Stok Menipis Alert Card ===== */
-    .stok-alert-card {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.08));
-        border: 1px solid rgba(245, 158, 11, 0.25);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem;
-        animation: fadeInUp 0.5s ease both;
-        display: none;
-    }
-
-    .stok-alert-card.show {
-        display: block;
-    }
-
-    .stok-alert-header {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        margin-bottom: 0.85rem;
-    }
-
-    .stok-alert-icon {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        background: rgba(245, 158, 11, 0.15);
-        border-radius: var(--radius-sm);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.15rem;
-        color: var(--warning);
-    }
-
-    .stok-alert-title {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: var(--warning);
-        margin: 0;
-    }
-
-    .stok-alert-subtitle {
-        font-size: 0.78rem;
-        color: var(--text-muted);
-        margin: 0;
-    }
-
-    .stok-alert-items {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .stok-alert-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        background: rgba(239, 68, 68, 0.12);
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        border-radius: var(--radius-sm);
-        padding: 0.4rem 0.75rem;
-        font-size: 0.82rem;
-        font-weight: 500;
-        color: var(--danger);
-        transition: var(--transition-fast);
-    }
-
-    .stok-alert-badge:hover {
-        background: rgba(239, 68, 68, 0.18);
-        transform: translateY(-1px);
-    }
-
-    .stok-alert-badge i {
-        font-size: 0.7rem;
-    }
-
-    /* ===== Stok Column Badges ===== */
-    .stok-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        padding: 0.2rem 0.55rem;
-        border-radius: 6px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .stok-badge.stok-ok {
-        background: rgba(16, 185, 129, 0.12);
-        color: #10b981;
-    }
-
-    .stok-badge.stok-warning {
-        background: rgba(245, 158, 11, 0.12);
-        color: #f59e0b;
-    }
-
-    .stok-badge.stok-danger {
-        background: rgba(239, 68, 68, 0.12);
-        color: #ef4444;
-    }
-
-    .stok-badge i {
-        font-size: 0.72rem;
-    }
-
-    .stok-summary-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1.1rem;
-    }
-
-    .stok-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-    }
-
-    .stok-item-info {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .stok-item-name {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .stok-item-name i {
-        font-size: 0.8rem;
-        flex-shrink: 0;
-    }
-
-    .stok-item-status {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .stok-item-bar-container {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .stok-progress {
-        height: 10px;
-        background: var(--bg-surface);
-        border-radius: 5px;
-        overflow: hidden;
-    }
-
-    .stok-progress-fill {
-        height: 100%;
-        border-radius: 5px;
-        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        width: 0;
-    }
-
-    .stok-progress-fill.fill-ok {
-        background: linear-gradient(90deg, #10b981, #34d399);
-    }
-
-    .stok-progress-fill.fill-warning {
-        background: linear-gradient(90deg, #f59e0b, #fbbf24);
-    }
-
-    .stok-progress-fill.fill-danger {
-        background: linear-gradient(90deg, #ef4444, #f87171);
-    }
-
-    .stok-bar-labels {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 0.25rem;
-    }
-
-    .stok-item-pct {
-        font-size: 0.72rem;
-        font-weight: 600;
-    }
-
-    .stok-item-value {
-        font-size: 0.82rem;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .stok-item-value.text-ok { color: #10b981; }
-    .stok-item-value.text-warning { color: #f59e0b; }
-    .stok-item-value.text-danger { color: #ef4444; }
-    .stok-item-status.text-ok { color: #10b981; }
-    .stok-item-status.text-warning { color: #f59e0b; }
-    .stok-item-status.text-danger { color: #ef4444; }
-    .stok-item-pct.text-ok { color: #10b981; }
-    .stok-item-pct.text-warning { color: #f59e0b; }
-    .stok-item-pct.text-danger { color: #ef4444; }
-
-    .stok-empty-state {
-        text-align: center;
-        padding: 2rem 1rem;
-        color: var(--text-muted);
-    }
-
-    .stok-empty-state i {
-        font-size: 2rem;
-        display: block;
-        margin-bottom: 0.5rem;
-        opacity: 0.5;
-    }
-
-    /* ===== Transaksi Table Extras ===== */
-    .trx-number {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 26px;
-        height: 26px;
-        border-radius: 6px;
-        background: rgba(99, 102, 241, 0.1);
-        color: var(--primary);
-        font-size: 0.72rem;
-        font-weight: 700;
-        flex-shrink: 0;
-    }
-
-    .qty-badge {
-        display: inline-block;
-        padding: 0.2rem 0.6rem;
-        border-radius: 6px;
-        background: rgba(99, 102, 241, 0.08);
-        color: var(--primary-light, var(--primary));
-        font-size: 0.82rem;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-3 px-lg-4 py-4">
-    <!-- Page Header -->
-    <div class="page-header mb-4">
+<main class="dashboard-page container-fluid px-3 px-lg-4 py-4" id="dashboard-page" aria-busy="true">
+    <header class="dashboard-heading">
         <div>
-            <h1 class="page-title">
-                <i class="bi bi-grid-1x2-fill me-2"></i>Dashboard
-            </h1>
-            <p class="page-subtitle">Selamat datang, {{ user.name }}! Pantau performa bisnis Anda.</p>
+            <span class="dashboard-eyebrow">Ringkasan bisnis</span>
+            <h1><i class="bi bi-grid-1x2-fill"></i>Dashboard</h1>
+            <p id="active-period-label">Memuat ringkasan hari ini...</p>
         </div>
-    </div>
-    
-    <!-- Stok Menipis Alert -->
-    <div class="stok-alert-card mb-4" id="stok-alert-card">
-        <div class="stok-alert-header">
-            <div class="stok-alert-icon">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-            </div>
-            <div>
-                <h6 class="stok-alert-title">⚠️ Stok Menipis</h6>
-                <p class="stok-alert-subtitle">Produk berikut memiliki stok di bawah 5 — segera restok!</p>
-            </div>
+        <div class="dashboard-heading-actions">
+            <span class="dashboard-freshness" id="dashboard-last-updated" aria-live="polite">
+                <i class="bi bi-arrow-repeat"></i>Menyiapkan data
+            </span>
+            <a class="dashboard-primary-action" href="{{ url_for('chat.chat_page') }}">
+                <i class="bi bi-mic-fill"></i>Catat transaksi
+            </a>
         </div>
-        <div class="stok-alert-items" id="stok-alert-items">
-            <!-- Diisi oleh JS -->
-        </div>
-    </div>
+    </header>
 
-    <!-- Filter Section -->
-    <div class="filter-section mb-4" id="filter-section">
-        <div class="btn-group flex-wrap" role="group" id="period-filter">
-            <button type="button" class="btn btn-filter active" data-shortcut="hari_ini">Hari Ini</button>
-            <button type="button" class="btn btn-filter" data-shortcut="kemarin">Kemarin</button>
-            <button type="button" class="btn btn-filter" data-shortcut="7hari">7 Hari Terakhir</button>
-            <button type="button" class="btn btn-filter" data-shortcut="30hari">30 Hari Terakhir</button>
-            <button type="button" class="btn btn-filter" data-shortcut="bulan_ini">Bulan Ini</button>
-            <button type="button" class="btn btn-filter" data-shortcut="custom" id="btn-custom-filter">Custom</button>
+    <section class="dashboard-toolbar" aria-labelledby="period-heading">
+        <div class="dashboard-toolbar-row">
+            <div class="dashboard-toolbar-label">
+                <i class="bi bi-calendar3"></i>
+                <span><small id="period-heading">Periode laporan</small><strong id="period-selection-label">Hari ini</strong></span>
+            </div>
+            <div class="dashboard-period-scroll">
+                <div class="btn-group" role="group" aria-label="Pilih periode laporan" id="period-filter">
+                    <button type="button" class="btn btn-filter active" data-shortcut="hari_ini">Hari Ini</button>
+                    <button type="button" class="btn btn-filter" data-shortcut="kemarin">Kemarin</button>
+                    <button type="button" class="btn btn-filter" data-shortcut="7hari">7 Hari</button>
+                    <button type="button" class="btn btn-filter" data-shortcut="30hari">30 Hari</button>
+                    <button type="button" class="btn btn-filter" data-shortcut="bulan_ini">Bulan Ini</button>
+                    <button type="button" class="btn btn-filter" data-shortcut="custom" id="btn-custom-filter">Rentang</button>
+                </div>
+            </div>
+            <div class="dashboard-loading-indicator" id="dashboard-loading-indicator" role="status">
+                <span class="spinner-border spinner-border-sm"></span>Memperbarui
+            </div>
         </div>
-        
-        <!-- Custom Date Range (hidden by default) -->
-        <div class="custom-date-range" id="custom-date-range" style="display:none;">
-            <span class="text-muted" style="font-size:0.85rem;">Dari:</span>
-            <input type="text" class="form-control form-control-custom flatpickr-input" id="date-from" placeholder="Pilih tanggal">
-            <span class="text-muted" style="font-size:0.85rem;">Sampai:</span>
-            <input type="text" class="form-control form-control-custom flatpickr-input" id="date-to" placeholder="Pilih tanggal">
-            <button class="btn btn-primary btn-sm" id="btn-apply-custom">
+
+        <div class="custom-date-range" id="custom-date-range" hidden>
+            <label for="date-from">Dari</label>
+            <input type="text" class="form-control form-control-custom flatpickr-input" id="date-from" placeholder="Pilih tanggal" autocomplete="off">
+            <label for="date-to">Sampai</label>
+            <input type="text" class="form-control form-control-custom flatpickr-input" id="date-to" placeholder="Pilih tanggal" autocomplete="off">
+            <button class="btn btn-primary btn-sm" id="btn-apply-custom" type="button">
                 <i class="bi bi-funnel me-1"></i>Terapkan
             </button>
         </div>
-    </div>
-    
-    <!-- Stats Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-            <div class="stat-card" style="--i:0">
-                <div class="stat-icon stat-icon-sales">
-                    <i class="bi bi-cash-stack"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-label">Total Penjualan</span>
-                    <span class="stat-value" id="stat-penjualan">
-                        <div class="skeleton skeleton-text"></div>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="stat-card" style="--i:1">
-                <div class="stat-icon stat-icon-trx">
-                    <i class="bi bi-receipt"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-label">Jumlah Transaksi</span>
-                    <span class="stat-value" id="stat-transaksi">
-                        <div class="skeleton skeleton-text"></div>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="stat-card" style="--i:2">
-                <div class="stat-icon stat-icon-product">
-                    <i class="bi bi-trophy-fill"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-label">Produk Terlaris</span>
-                    <span class="stat-value stat-value-sm" id="stat-produk">
-                        <div class="skeleton skeleton-text"></div>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="stat-card" style="--i:3">
-                <div class="stat-icon stat-icon-margin">
-                    <i class="bi bi-piggy-bank-fill"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-label">Total Margin</span>
-                    <span class="stat-value" id="stat-margin">
-                        <div class="skeleton skeleton-text"></div>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Charts Row -->
-    <div class="row g-3 mb-4">
-        <div class="col-lg-8">
-            <div class="content-card">
-                <div class="card-header-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-graph-up me-2"></i>Grafik Penjualan
-                    </h5>
-                </div>
-                <div class="card-body-custom">
-                    <div class="chart-container">
-                        <canvas id="salesChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="content-card">
-                <div class="card-header-custom">
-                    <h5 class="card-title-custom">
-                        <i class="bi bi-pie-chart-fill me-2"></i>Margin per Produk
-                    </h5>
-                </div>
-                <div class="card-body-custom">
-                    <div class="chart-container chart-container-sm">
-                        <canvas id="marginChart"></canvas>
-                    </div>
-                    <div id="margin-legend" class="margin-legend mt-3"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </section>
 
-    <!-- Ringkasan Stok -->
-    <div class="row g-3 mb-4">
-        <div class="col-12">
-            <div class="content-card">
-                <div class="card-header-custom">
-                    <h5 class="card-title-custom mb-0">
-                        <i class="bi bi-box-seam-fill me-2"></i>📦 Ringkasan Stok
-                    </h5>
-                </div>
-                <div class="card-body-custom">
-                    <div id="stok-summary" class="stok-summary-list">
-                        <div class="stok-empty-state">
-                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                            <span class="ms-2">Memuat data stok...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Data Tables -->
-    <div class="row g-4 pb-4">
-        <!-- Tabel Transaksi -->
-        <div class="col-12">
-            <div class="content-card">
-                <div class="card-header-custom">
-                    <h5 class="card-title-custom mb-0">
-                        <i class="bi bi-receipt me-2"></i>Data Transaksi
-                    </h5>
-                </div>
-                <div class="card-body-custom p-0">
-                    <div class="table-responsive">
-                        <table class="table table-custom mb-0" id="table-transaksi">
-                            <thead>
-                                <tr>
-                                    <th>Produk</th>
-                                    <th>Tanggal</th>
-                                    <th>Waktu</th>
-                                    <th class="text-center">Qty</th>
-                                    <th class="text-end">Harga</th>
-                                    <th class="text-end">Total</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transaksi-body">
-                                <tr>
-                                    <td colspan="7" class="text-center py-4">
-                                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                        <span class="ms-2">Memuat data...</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section class="dashboard-error" id="dashboard-error" role="alert" hidden>
+        <span class="dashboard-error-icon"><i class="bi bi-wifi-off"></i></span>
+        <div><strong>Data belum berhasil dimuat</strong><p id="dashboard-error-message">Periksa koneksi lalu coba lagi.</p></div>
+        <button type="button" id="dashboard-retry"><i class="bi bi-arrow-clockwise"></i>Coba lagi</button>
+    </section>
 
-        <!-- Tabel Produk -->
-        <div class="col-12">
-            <div class="content-card">
-                <div class="card-header-custom">
-                    <h5 class="card-title-custom mb-0">
-                        <i class="bi bi-box-seam me-2"></i>Data Produk
-                    </h5>
+    <section class="dashboard-stats" aria-label="Indikator utama bisnis">
+        <article class="stat-card" style="--i:0">
+            <span class="stat-icon stat-icon-sales"><i class="bi bi-cash-stack"></i></span>
+            <div class="stat-info">
+                <span class="stat-label">Total penjualan</span>
+                <strong class="stat-value" id="stat-penjualan"><span class="skeleton skeleton-text"></span></strong>
+                <span class="stat-meta" id="stat-penjualan-meta">Pada periode aktif</span>
+            </div>
+        </article>
+        <article class="stat-card" style="--i:1">
+            <span class="stat-icon stat-icon-trx"><i class="bi bi-receipt"></i></span>
+            <div class="stat-info">
+                <span class="stat-label">Jumlah transaksi</span>
+                <strong class="stat-value" id="stat-transaksi"><span class="skeleton skeleton-text"></span></strong>
+                <span class="stat-meta" id="stat-transaksi-meta">Pada periode aktif</span>
+            </div>
+        </article>
+        <article class="stat-card" style="--i:2">
+            <span class="stat-icon stat-icon-product"><i class="bi bi-trophy-fill"></i></span>
+            <div class="stat-info">
+                <span class="stat-label">Produk terlaris</span>
+                <strong class="stat-value stat-value-sm" id="stat-produk"><span class="skeleton skeleton-text"></span></strong>
+                <span class="stat-meta" id="stat-produk-meta">Berdasarkan jumlah terjual</span>
+            </div>
+        </article>
+        <article class="stat-card" style="--i:3">
+            <span class="stat-icon stat-icon-margin"><i class="bi bi-piggy-bank-fill"></i></span>
+            <div class="stat-info">
+                <span class="stat-label">Estimasi laba kotor</span>
+                <strong class="stat-value" id="stat-margin"><span class="skeleton skeleton-text"></span></strong>
+                <span class="stat-meta" id="stat-margin-meta">Penjualan dikurangi modal</span>
+            </div>
+        </article>
+    </section>
+
+    <section class="stock-action-panel" id="stok-alert-card" hidden>
+        <div class="stock-action-copy">
+            <span class="stock-action-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+            <div><span class="dashboard-eyebrow">Perlu tindakan</span><h2>Beberapa produk perlu segera direstok</h2><p>Prioritaskan produk dengan stok di bawah 5 agar penjualan tidak terhenti.</p></div>
+        </div>
+        <div class="stock-action-items" id="stok-alert-items"></div>
+        <a class="stock-action-cta" href="{{ url_for('chat.chat_page') }}"><i class="bi bi-mic-fill"></i>Tambah stok lewat chat</a>
+    </section>
+
+    <section class="dashboard-operational-grid">
+        <article class="content-card dashboard-recent-card">
+            <header class="card-header-custom dashboard-card-heading">
+                <div><span class="dashboard-card-icon"><i class="bi bi-clock-history"></i></span><span><small>Aktivitas</small><strong>Transaksi terbaru</strong></span></div>
+                <button class="dashboard-link-button" type="button" id="show-all-transactions">Lihat semua<i class="bi bi-arrow-right"></i></button>
+            </header>
+            <div class="dashboard-recent-list" id="recent-transactions">
+                <div class="dashboard-inline-loading"><span class="spinner-border spinner-border-sm"></span>Memuat transaksi...</div>
+            </div>
+        </article>
+
+        <article class="content-card dashboard-stock-card">
+            <header class="card-header-custom dashboard-card-heading">
+                <div><span class="dashboard-card-icon stock"><i class="bi bi-box-seam-fill"></i></span><span><small>Persediaan</small><strong>Status stok</strong></span></div>
+                <span class="stock-threshold-note">Kritis &lt; 5</span>
+            </header>
+            <div class="dashboard-stock-list" id="stok-summary">
+                <div class="dashboard-inline-loading"><span class="spinner-border spinner-border-sm"></span>Memuat stok...</div>
+            </div>
+        </article>
+    </section>
+
+    <section class="dashboard-analytics" id="dashboard-analytics">
+        <header class="dashboard-section-heading">
+            <div><span class="dashboard-eyebrow">Analitik</span><h2>Tren dan kontribusi laba</h2><p>Gunakan grafik untuk melihat pola, bukan untuk tindakan stok harian.</p></div>
+            <button type="button" class="analytics-toggle" id="analytics-toggle" aria-expanded="true" aria-controls="analytics-content"><span>Sembunyikan grafik</span><i class="bi bi-chevron-up"></i></button>
+        </header>
+        <div class="dashboard-analytics-grid" id="analytics-content">
+            <article class="content-card">
+                <header class="card-header-custom dashboard-card-heading compact">
+                    <div><span class="dashboard-card-icon"><i class="bi bi-graph-up"></i></span><span><small>Per periode</small><strong>Tren penjualan</strong></span></div>
+                </header>
+                <div class="card-body-custom dashboard-chart-body">
+                    <div class="chart-container"><canvas id="salesChart"></canvas><div class="chart-empty" id="sales-chart-empty" hidden><i class="bi bi-bar-chart"></i><span>Belum ada penjualan pada periode ini</span></div></div>
                 </div>
-                <div class="card-body-custom p-0">
-                    <div class="table-responsive">
-                        <table class="table table-custom mb-0" id="table-produk">
-                            <thead>
-                                <tr>
-                                    <th>Nama Produk</th>
-                                    <th class="text-end">Harga Jual</th>
-                                    <th class="text-end">Modal</th>
-                                    <th class="text-end">Margin</th>
-                                    <th class="text-center">Stok</th>
-                                    <th>Terakhir Update</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="produk-body">
-                                <tr>
-                                    <td colspan="7" class="text-center py-4">
-                                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                        <span class="ms-2">Memuat data...</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            </article>
+            <article class="content-card">
+                <header class="card-header-custom dashboard-card-heading compact">
+                    <div><span class="dashboard-card-icon margin"><i class="bi bi-pie-chart-fill"></i></span><span><small>Kontribusi total</small><strong>Laba kotor per produk</strong></span></div>
+                </header>
+                <div class="card-body-custom dashboard-chart-body">
+                    <div class="chart-container chart-container-sm"><canvas id="marginChart"></canvas><div class="chart-empty" id="margin-chart-empty" hidden><i class="bi bi-pie-chart"></i><span>Belum ada data laba</span></div></div>
+                    <div id="margin-legend" class="margin-legend"></div>
                 </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="dashboard-data-section" id="dashboard-data-section">
+        <header class="dashboard-section-heading dashboard-data-heading">
+            <div><span class="dashboard-eyebrow">Kelola data</span><h2>Produk dan transaksi</h2><p>Periksa detail lengkap dan lakukan penghapusan dengan hati-hati.</p></div>
+            <label class="dashboard-search"><i class="bi bi-search"></i><span class="visually-hidden">Cari data</span><input type="search" id="dashboard-data-search" placeholder="Cari produk..." autocomplete="off"></label>
+        </header>
+
+        <div class="dashboard-data-card content-card">
+            <div class="dashboard-data-tabs" role="tablist" aria-label="Jenis data">
+                <button type="button" class="active" role="tab" aria-selected="true" data-data-tab="produk"><i class="bi bi-box-seam"></i>Produk <span id="produk-count">0</span></button>
+                <button type="button" role="tab" aria-selected="false" data-data-tab="transaksi"><i class="bi bi-receipt"></i>Semua transaksi <span id="transaksi-count">0</span></button>
+            </div>
+
+            <div class="dashboard-data-panel active" data-data-panel="produk" role="tabpanel">
+                <div class="table-responsive dashboard-desktop-table">
+                    <table class="table table-custom mb-0" id="table-produk">
+                        <thead><tr><th>Nama produk</th><th class="text-end">Harga jual</th><th class="text-end">Modal</th><th class="text-end">Margin/unit</th><th class="text-center">Stok</th><th>Terakhir diperbarui</th><th class="text-center">Aksi</th></tr></thead>
+                        <tbody id="produk-body"><tr><td colspan="7"><div class="dashboard-inline-loading"><span class="spinner-border spinner-border-sm"></span>Memuat produk...</div></td></tr></tbody>
+                    </table>
+                </div>
+                <div class="dashboard-mobile-list" id="produk-mobile-list"></div>
+                <button type="button" class="dashboard-load-more" id="produk-load-more" hidden>Tampilkan lebih banyak<i class="bi bi-chevron-down"></i></button>
+            </div>
+
+            <div class="dashboard-data-panel" data-data-panel="transaksi" role="tabpanel" hidden>
+                <div class="table-responsive dashboard-desktop-table">
+                    <table class="table table-custom mb-0" id="table-transaksi">
+                        <thead><tr><th>Produk</th><th>Tanggal</th><th>Waktu</th><th class="text-center">Qty</th><th class="text-end">Harga</th><th class="text-end">Total</th><th class="text-center">Aksi</th></tr></thead>
+                        <tbody id="transaksi-body"><tr><td colspan="7"><div class="dashboard-inline-loading"><span class="spinner-border spinner-border-sm"></span>Memuat transaksi...</div></td></tr></tbody>
+                    </table>
+                </div>
+                <div class="dashboard-mobile-list" id="transaksi-mobile-list"></div>
+                <button type="button" class="dashboard-load-more" id="transaksi-load-more" hidden>Tampilkan lebih banyak<i class="bi bi-chevron-down"></i></button>
             </div>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 {% endblock %}
 
 {% block extra_js %}

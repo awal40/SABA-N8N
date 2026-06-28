@@ -14,35 +14,31 @@ echo "==============================="
 # Pastikan folder n8n ada
 source /app/n8n_env.sh
 
-# Import workflow sebelum server n8n start agar tidak berebut lock SQLite.
-N8N_IMPORT_FILE="${N8N_IMPORT_FILE:-/app/SABA-N8N-V 1.0.json}"
-IMPORT_MARKER="${N8N_USER_FOLDER}/.saba_workflow_imported"
+# Lindungi editor n8n di Nginx. Endpoint webhook produksi tetap publik.
+# Set N8N_EDITOR_USERNAME dan N8N_EDITOR_PASSWORD sebagai Hugging Face Secrets.
+N8N_EDITOR_AUTH_FILE="/tmp/n8n_editor.htpasswd"
 
-if [[ ! -f "$N8N_IMPORT_FILE" ]]; then
-  echo "[Auto-Import] Lewati import: file workflow tidak ditemukan di $N8N_IMPORT_FILE"
+create_editor_password_hash() {
+  python3 -c 'import base64, hashlib, sys; print("{SHA}" + base64.b64encode(hashlib.sha1(sys.stdin.buffer.read()).digest()).decode())'
+}
+
+if [[ -n "${N8N_EDITOR_USERNAME:-}" && -n "${N8N_EDITOR_PASSWORD:-}" ]] \
+  && [[ "$N8N_EDITOR_USERNAME" != *:* ]] \
+  && [[ "$N8N_EDITOR_USERNAME" != *$'\n'* ]] \
+  && [[ "$N8N_EDITOR_USERNAME" != *$'\r'* ]]; then
+  EDITOR_PASSWORD_HASH="$(printf '%s' "$N8N_EDITOR_PASSWORD" | create_editor_password_hash)"
+  printf '%s:%s\n' "$N8N_EDITOR_USERNAME" "$EDITOR_PASSWORD_HASH" > "$N8N_EDITOR_AUTH_FILE"
+  echo "[n8n security] Editor dilindungi dengan autentikasi tambahan."
 else
-  IMPORT_HASH="$(sha256sum "$N8N_IMPORT_FILE" | awk '{print $1}')"
-
-  if [[ -f "$IMPORT_MARKER" && "$(cat "$IMPORT_MARKER")" == "$IMPORT_HASH" && "${FORCE_N8N_IMPORT:-false}" != "true" ]]; then
-    echo "[Auto-Import] Workflow file belum berubah. Set FORCE_N8N_IMPORT=true untuk import ulang."
-  elif n8n import:workflow --input="$N8N_IMPORT_FILE"; then
-    echo "[Auto-Import] Workflow n8n berhasil di-import."
-    echo "$IMPORT_HASH" > "$IMPORT_MARKER"
-
-    if [[ "${AUTO_ACTIVATE_N8N_WORKFLOWS:-true}" == "true" ]]; then
-      WORKFLOW_ID="$(N8N_IMPORT_FILE="$N8N_IMPORT_FILE" python3 -c 'import json, os; print(json.load(open(os.environ["N8N_IMPORT_FILE"])).get("id", ""))')"
-      if [[ -z "$WORKFLOW_ID" ]]; then
-        echo "[Auto-Import] Import berhasil, tetapi workflow ID kosong. Aktifkan manual dari UI n8n."
-      elif n8n update:workflow --id="$WORKFLOW_ID" --active=true; then
-        echo "[Auto-Import] Workflow n8n berhasil diaktifkan."
-      else
-        echo "[Auto-Import] Import berhasil, tetapi aktivasi workflow gagal. Aktifkan manual dari UI n8n."
-      fi
-    fi
-  else
-    echo "[Auto-Import] Gagal mengimport workflow. Cek /tmp/n8n/n8n.log atau log Hugging Face."
-  fi
+  # Fail closed: aplikasi dan webhook tetap berjalan, tetapi editor tidak dapat diakses
+  # sampai kedua secret disetel dengan benar.
+  EDITOR_PASSWORD_HASH="$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))' | create_editor_password_hash)"
+  printf '%s:%s\n' '__saba_editor_locked__' "$EDITOR_PASSWORD_HASH" > "$N8N_EDITOR_AUTH_FILE"
+  echo "[n8n security] PERINGATAN: secret editor belum lengkap; akses editor dikunci."
 fi
+
+chmod 600 "$N8N_EDITOR_AUTH_FILE"
+unset N8N_EDITOR_PASSWORD EDITOR_PASSWORD_HASH
 
 # Jalankan supervisord sebagai proses utama
 exec supervisord -c /app/supervisord.conf
