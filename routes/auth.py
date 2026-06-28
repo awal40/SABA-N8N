@@ -4,7 +4,7 @@ Menangani login, callback, logout, dan auto-refresh token.
 """
 
 import requests
-from flask import Blueprint, redirect, url_for, session, request, flash, render_template
+from flask import Blueprint, current_app, redirect, url_for, session, request, flash, render_template
 from google_auth_oauthlib.flow import Flow
 from config import Config
 from services import supabase_service
@@ -123,14 +123,19 @@ def callback():
         # Ambil info user dari Google
         userinfo_response = requests.get(
             'https://www.googleapis.com/oauth2/v2/userinfo',
-            headers={'Authorization': f'Bearer {access_token}'}
+            headers={'Authorization': f'Bearer {access_token}'},
+            timeout=15,
         )
+        userinfo_response.raise_for_status()
         userinfo = userinfo_response.json()
         
         google_id = userinfo.get('id')
         email = userinfo.get('email')
         name = userinfo.get('name', email)
         picture = userinfo.get('picture', '')
+
+        if not google_id or not email:
+            raise ValueError('Google tidak mengembalikan identitas pengguna yang lengkap.')
         
         # Cek/buat user di Supabase
         user = supabase_service.get_user_by_google_id(google_id)
@@ -165,7 +170,10 @@ def callback():
             try:
                 spreadsheet_id = create_spreadsheet(access_token, email)
                 supabase_service.update_user_spreadsheet(google_id, spreadsheet_id)
+            except supabase_service.SupabaseTemporaryError:
+                raise
             except Exception as e:
+                current_app.logger.exception('Gagal membuat spreadsheet pengguna.')
                 flash(f'Gagal membuat spreadsheet: {str(e)}', 'danger')
                 return redirect(url_for('auth.login'))
         
@@ -185,8 +193,24 @@ def callback():
         flash(f'Selamat datang, {name}! 👋', 'success')
         return redirect(url_for('chat.chat_page'))
         
-    except Exception as e:
-        flash(f'Login gagal: {str(e)}', 'danger')
+    except supabase_service.SupabaseTemporaryError:
+        current_app.logger.warning(
+            'Login gagal setelah pemulihan koneksi Supabase.',
+            exc_info=True,
+        )
+        flash(
+            'Koneksi database sementara terganggu. Sistem sudah mencoba '
+            'menyambung ulang; silakan coba masuk kembali.',
+            'danger',
+        )
+        return redirect(url_for('auth.login'))
+    except requests.RequestException:
+        current_app.logger.warning('Login gagal saat menghubungi Google.', exc_info=True)
+        flash('Layanan Google sementara tidak dapat dihubungi. Silakan coba lagi.', 'danger')
+        return redirect(url_for('auth.login'))
+    except Exception:
+        current_app.logger.exception('Login OAuth gagal.')
+        flash('Login gagal diproses. Silakan coba kembali.', 'danger')
         return redirect(url_for('auth.login'))
 
 
